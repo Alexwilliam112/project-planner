@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.gantt-container .calendar .calendar-row .calendar-cell {
+  border-right: 1px solid #ccc;
+}
+
+.gantt-container .calendar .calendar-row:first-child .calendar-cell {
+  border-right: 2px solid #888; /* Make month separator bolder */
+}
+
+.gantt-container .bar-project {
+  fill: #5c6bc0 !important; /* Indigo for project bars */
+  stroke: #3949ab !important;
+}
+
+.gantt-container .task-list-item.project {
+  font-weight: bold;
+}
+
+.gantt-container .task-list-item[data-task-type='task'][data-has-children='true'] {
+  font-weight: bold;
+  background-color: #f8f9fa;
+}
