@@ -1,9 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Gantt, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
 
 export default function GanttPage() {
+  const [viewMode, setViewMode] = useState(ViewMode.Day);
+  const ganttContainerRef = useRef(null);
+
   const [tasks, setTasks] = useState([
     {
       id: "P1",
@@ -19,7 +22,7 @@ export default function GanttPage() {
       id: "SP1",
       name: "Subproject A",
       type: "project",
-      project: "P1", // 🔗 belongs to Main Project
+      project: "P1",
       start: new Date(2025, 4, 1),
       end: new Date(2025, 4, 15),
       progress: 60,
@@ -30,7 +33,7 @@ export default function GanttPage() {
       id: "T1",
       name: "Task A1",
       type: "task",
-      project: "SP1", // 🔗 belongs to Subproject A
+      project: "SP1",
       start: new Date(2025, 4, 2),
       end: new Date(2025, 4, 5),
       progress: 100,
@@ -51,7 +54,7 @@ export default function GanttPage() {
       id: "SP2",
       name: "Subproject B",
       type: "project",
-      project: "P1", // 🔗 also belongs to Main Project
+      project: "P1",
       start: new Date(2025, 4, 16),
       end: new Date(2025, 4, 30),
       progress: 20,
@@ -70,7 +73,6 @@ export default function GanttPage() {
     },
   ]);
 
-  // 🟩 The key logic to toggle hideChildren for a project
   const handleExpanderClick = (task) => {
     const updatedTasks = tasks.map((t) => {
       if (t.id === task.id) {
@@ -81,13 +83,53 @@ export default function GanttPage() {
     setTasks(updatedTasks);
   };
 
+  useEffect(() => {
+    const container = ganttContainerRef.current;
+
+    const handleWheel = (event) => {
+      if (event.ctrlKey) {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+          setViewMode((prev) =>
+            prev === ViewMode.Month
+              ? ViewMode.Week
+              : prev === ViewMode.Week
+              ? ViewMode.Day
+              : ViewMode.Day
+          );
+        } else {
+          setViewMode((prev) =>
+            prev === ViewMode.Day
+              ? ViewMode.Week
+              : prev === ViewMode.Week
+              ? ViewMode.Month
+              : ViewMode.Month
+          );
+        }
+      }
+    };
+
+    if (container) {
+      container.addEventListener("wheel", handleWheel, { passive: false });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, []);
+
   return (
     <div style={{ padding: "2rem" }}>
-      <h1>Gantt with Grouping & Collapse</h1>
-      <div style={{ height: 600 }}>
+      <h1>Gantt with Zoomable View</h1>
+      <p>
+        <strong>CTRL + Scroll</strong> to zoom view (Day → Week → Month)
+      </p>
+      <div ref={ganttContainerRef} style={{ height: 600 }}>
         <Gantt
           tasks={tasks}
-          viewMode={ViewMode.Day}
+          viewMode={viewMode}
           onExpanderClick={handleExpanderClick}
         />
       </div>
