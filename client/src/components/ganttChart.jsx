@@ -116,12 +116,12 @@ export default function GanttChart() {
 
     {
       id: "P12",
-      name: "Karyamas Adinusantara",
+      name: "Fujiseat",
       type: "project",
       block_type: "project",
       category: "project",
       type_of_custom: "Core + Officeless",
-      type_of_project: "App Builder",
+      type_of_project: "Enablement",
       status: "On Progress",
       start: new Date(2025, 4, 1),
       end: new Date(2025, 4, 30),
