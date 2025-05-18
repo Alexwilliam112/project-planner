@@ -29,6 +29,7 @@ export default function GanttChart() {
       name: "Karyamas Adinusantara",
       type: "project",
       block_type: "project",
+      category: "project",
       type_of_custom: "Core + Officeless",
       type_of_project: "App Builder",
       status: "On Progress",
@@ -42,7 +43,8 @@ export default function GanttChart() {
       id: "SP1",
       name: "Talenta",
       type: "project",
-      block_type: "subproject_core",
+      block_type: "subproject",
+      category: "core",
       pm: "Nata Liong",
       assignee: "Krisna Atteyendra",
       status: "Development",
@@ -57,6 +59,7 @@ export default function GanttChart() {
       id: "T1",
       name: "RFC Creation",
       type: "task",
+      block_type: "task",
       project: "SP1",
       start: new Date(2025, 4, 2),
       end: new Date(2025, 4, 5),
@@ -66,6 +69,7 @@ export default function GanttChart() {
       id: "T2",
       name: "Development",
       type: "task",
+      block_type: "task",
       project: "SP1",
       start: new Date(2025, 4, 6),
       end: new Date(2025, 4, 10),
@@ -76,6 +80,7 @@ export default function GanttChart() {
       id: "T20",
       name: "E2E Testing",
       type: "task",
+      block_type: "task",
       project: "SP1",
       start: new Date(2025, 4, 6),
       end: new Date(2025, 4, 10),
@@ -86,7 +91,8 @@ export default function GanttChart() {
       id: "SP2",
       name: "Officeless",
       type: "project",
-      block_type: "subproject_appBuilder",
+      block_type: "subproject",
+      category: "appBuilder",
       pm: "Daffa",
       assignee: "Caroline",
       status: "Development",
@@ -101,6 +107,7 @@ export default function GanttChart() {
       id: "T3",
       name: "Development",
       type: "task",
+      block_type: "task",
       project: "SP2",
       start: new Date(2025, 4, 17),
       end: new Date(2025, 4, 20),
@@ -112,6 +119,7 @@ export default function GanttChart() {
       name: "Karyamas Adinusantara",
       type: "project",
       block_type: "project",
+      category: "project",
       type_of_custom: "Core + Officeless",
       type_of_project: "App Builder",
       status: "On Progress",
@@ -125,7 +133,8 @@ export default function GanttChart() {
       id: "SP12",
       name: "Talenta",
       type: "project",
-      block_type: "subproject_core",
+      block_type: "subproject",
+      category: "core",
       pm: "Nata Liong",
       assignee: "Krisna Atteyendra",
       status: "Development",
@@ -140,6 +149,7 @@ export default function GanttChart() {
       id: "T12",
       name: "RFC Creation",
       type: "task",
+      block_type: "task",
       project: "SP12",
       start: new Date(2025, 4, 2),
       end: new Date(2025, 4, 5),
@@ -149,6 +159,7 @@ export default function GanttChart() {
       id: "T22",
       name: "Development",
       type: "task",
+      block_type: "task",
       project: "SP12",
       start: new Date(2025, 4, 6),
       end: new Date(2025, 4, 10),
@@ -159,6 +170,7 @@ export default function GanttChart() {
       id: "T202",
       name: "E2E Testing",
       type: "task",
+      block_type: "task",
       project: "SP12",
       start: new Date(2025, 4, 6),
       end: new Date(2025, 4, 10),
@@ -169,7 +181,8 @@ export default function GanttChart() {
       id: "SP22",
       name: "Officeless",
       type: "project",
-      block_type: "subproject_enablement",
+      block_type: "subproject",
+      category: "enablement",
       pm: "Daffa",
       assignee: "Caroline",
       status: "Development",
@@ -184,6 +197,7 @@ export default function GanttChart() {
       id: "T32",
       name: "Development",
       type: "task",
+      block_type: "task",
       project: "SP22",
       start: new Date(2025, 4, 17),
       end: new Date(2025, 4, 20),
@@ -203,7 +217,7 @@ export default function GanttChart() {
       <div>
         <strong>{task.name}</strong>
       </div>
-      {task.block_type === "project" && (
+      {task.category === "project" && (
         <div>
           <div className="font-medium">
             Type of Custom: {task.type_of_custom}
@@ -214,7 +228,7 @@ export default function GanttChart() {
           <div className="">Status: {task.status}</div>
         </div>
       )}
-      {task.block_type === "subproject_core" && (
+      {task.category === "core" && (
         <div>
           <div className="font-medium">
             Technical Program Manager: {task.pm}
@@ -223,14 +237,14 @@ export default function GanttChart() {
           <div className="">Status: {task.status}</div>
         </div>
       )}
-      {task.block_type === "subproject_appBuilder" && (
+      {task.category === "appBuilder" && (
         <div>
           <div className="font-medium">Project Manager: {task.pm}</div>
           <div className="font-medium">System Analyst: {task.assignee}</div>
           <div className="">Status: {task.status}</div>
         </div>
       )}
-      {task.block_type === "subproject_enablement" && (
+      {task.category === "enablement" && (
         <div>
           <div className="font-medium">Project Manager: {task.pm}</div>
           <div className="font-medium">Solution Engineer: {task.assignee}</div>
@@ -241,6 +255,27 @@ export default function GanttChart() {
       <div>End: {task.end.toLocaleDateString()}</div>
     </div>
   );
+
+  const handleAddTask = () => {
+    const currentDate = new Date();
+    const newTask = {
+      id: Date.now().toString(),
+      name: "New Task",
+      type: "task",
+      progress: 0,
+      start: new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      ),
+      end: new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate() + 2
+      ),
+    };
+    setTasks((tasks) => [...tasks, newTask]);
+  };
 
   const handleTaskChange = (task) => {
     console.log("On date change Id:" + task.id);
@@ -329,6 +364,7 @@ export default function GanttChart() {
             {...props}
             allTasks={tasks}
             onExpanderClick={handleExpanderClick}
+            onAddTask={handleAddTask}
           />
         )}
         {...ganttStyles}

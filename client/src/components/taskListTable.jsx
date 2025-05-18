@@ -15,8 +15,8 @@ export const CustomTaskListHeader = ({
       position: "sticky",
       top: 0,
       zIndex: 10,
-      background: "#fff", // or your preferred color
-      boxShadow: "0 2px 4px rgba(0,0,0,0.03)", // optional, for separation
+      background: "#fff",
+      boxShadow: "0 2px 4px rgba(0,0,0,0.03)",
     }}
     className="flex"
   >
@@ -43,19 +43,17 @@ export const CustomTaskListTable = ({
   tasks,
   selectedTaskId,
   setSelectedTask,
-  allTasks, // Pass the full tasks array from parent!
-  onExpanderClick, // <-- use this from parent!
+  onAddTask,
+  allTasks,
+  onExpanderClick,
 }) => {
-  // Always check allTasks for children, not just visible tasks
   const hasChildren = (task) =>
     (allTasks || tasks).some((t) => t.project === task.id);
 
-  // Only hide non-projects whose parent is collapsed
   const getVisibleTasks = () => {
     const visible = [];
     const hiddenProjects = new Set();
     for (const task of tasks) {
-      // Only hide non-projects whose parent is collapsed
       if (
         task.type !== "project" &&
         task.project &&
@@ -63,7 +61,7 @@ export const CustomTaskListTable = ({
       )
         continue;
       visible.push(task);
-      // If this task is a project and is collapsed, hide its children (but not subprojects themselves)
+
       if (task.type === "project" && task.hideChildren)
         hiddenProjects.add(task.id);
     }
@@ -99,7 +97,7 @@ export const CustomTaskListTable = ({
             className="pl-3 flex-none px-2 whitespace-nowrap w-70 flex items-center"
             style={{
               paddingLeft: `${getTaskDepth(task, allTasks) * 20 + 12}px`,
-            }} // 12px base + 2px per depth
+            }}
           >
             {/* Always show expander for projects that have (or could have) children */}
             {task.type === "project" && hasChildren(task) && (
@@ -112,6 +110,22 @@ export const CustomTaskListTable = ({
                 title={task.hideChildren ? "Expand" : "Collapse"}
               >
                 {task.hideChildren ? "▶" : "▼"}
+              </button>
+            )}
+            {task.block_type == "subproject" && (
+              <button
+                className="ml-1 mb-1 text-blue-600 hover:text-blue-800 text-lg font-bold focus:outline-none"
+                style={{
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  lineHeight: 1,
+                  cursor: "pointer",
+                }}
+                onClick={() => onAddTask && onAddTask()}
+                title="Add subtask"
+              >
+                +
               </button>
             )}
             {task.name}
