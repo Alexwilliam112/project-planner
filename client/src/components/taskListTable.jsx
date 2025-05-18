@@ -1,0 +1,106 @@
+import React from "react";
+
+export const CustomTaskListHeader = ({
+  headerHeight,
+  rowWidth,
+  fontFamily,
+  fontSize,
+}) => (
+  <div
+    style={{ height: headerHeight, width: rowWidth, fontFamily, fontSize }}
+    className="flex pl-3"
+  >
+    <div className="flex-none px-2 font-bold whitespace-nowrap w-70">
+      Task Name
+    </div>
+    <div className="flex-none px-2 font-bold whitespace-nowrap w-25">
+      Start Date
+    </div>
+    <div className="flex-none px-2 font-bold whitespace-nowrap w-25">
+      End Date
+    </div>
+    <div className="flex-none px-2 font-bold whitespace-nowrap w-24">
+      Progress
+    </div>
+  </div>
+);
+
+export const CustomTaskListTable = ({
+  rowHeight,
+  rowWidth,
+  fontFamily,
+  fontSize,
+  tasks,
+  selectedTaskId,
+  setSelectedTask,
+  allTasks, // Pass the full tasks array from parent!
+  onExpanderClick, // <-- use this from parent!
+}) => {
+  // Always check allTasks for children, not just visible tasks
+  const hasChildren = (task) =>
+    (allTasks || tasks).some((t) => t.project === task.id);
+
+  // Only hide non-projects whose parent is collapsed
+  const getVisibleTasks = () => {
+    const visible = [];
+    const hiddenProjects = new Set();
+    for (const task of tasks) {
+      // Only hide non-projects whose parent is collapsed
+      if (
+        task.type !== "project" &&
+        task.project &&
+        hiddenProjects.has(task.project)
+      )
+        continue;
+      visible.push(task);
+      // If this task is a project and is collapsed, hide its children (but not subprojects themselves)
+      if (task.type === "project" && task.hideChildren)
+        hiddenProjects.add(task.id);
+    }
+    return visible;
+  };
+
+  return (
+    <div style={{ width: rowWidth, fontFamily, fontSize }}>
+      {getVisibleTasks().map((task) => (
+        <div
+          key={task.id}
+          style={{
+            height: rowHeight,
+            background: task.id === selectedTaskId ? "#f0f0f0" : "transparent",
+            display: "flex",
+            alignItems: "center",
+            cursor: "pointer",
+          }}
+          onClick={() => setSelectedTask(task.id)}
+        >
+          <div className="pl-3 flex-none px-2 whitespace-nowrap w-70 flex items-center">
+            {/* Always show expander for projects that have (or could have) children */}
+            {task.type === "project" && hasChildren(task) && (
+              <button
+                className="mr-2 focus:outline-none"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onExpanderClick && onExpanderClick(task);
+                }}
+                title={task.hideChildren ? "Expand" : "Collapse"}
+              >
+                {task.hideChildren ? "▶" : "▼"}
+              </button>
+            )}
+            {task.name}
+          </div>
+          <div className="flex-none px-2 whitespace-nowrap w-25">
+            {task.start instanceof Date ? task.start.toLocaleDateString() : ""}
+          </div>
+          <div className="flex-none px-2 whitespace-nowrap w-25">
+            {task.end instanceof Date ? task.end.toLocaleDateString() : ""}
+          </div>
+          <div className="flex-none px-2 whitespace-nowrap w-24">
+            {task.progress}%
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};

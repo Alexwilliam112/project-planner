@@ -3,6 +3,7 @@ import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { useState } from "react";
 import { getStartEndDateForProject } from "../utils/helpers.js";
 import { ViewSwitcher } from "../components/viewSwitcher";
+import { CustomTaskListTable, CustomTaskListHeader } from "./taskListTable.jsx";
 
 const ganttStyles = {
   rowHeight: 50,
@@ -21,7 +22,7 @@ const ganttStyles = {
 };
 
 export default function App() {
-  const [view, setView] = useState(ViewMode.Day);
+  const [view, setView] = useState(ViewMode.Week);
   const [tasks, setTasks] = useState([
     {
       id: "P1",
@@ -137,8 +138,11 @@ export default function App() {
   };
 
   const handleExpanderClick = (task) => {
-    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
-    console.log("On expander click Id:" + task.id);
+    setTasks((tasks) =>
+      tasks.map((t) =>
+        t.id === task.id ? { ...t, hideChildren: !t.hideChildren } : t
+      )
+    );
   };
 
   return (
@@ -148,18 +152,26 @@ export default function App() {
         onViewListChange={setIsChecked}
         isChecked={isChecked}
       />
-      <h3>Gantt With Unlimited Height</h3>
       <Gantt
         tasks={tasks}
+        allTasks={tasks}
         viewMode={view}
         onDateChange={handleTaskChange}
         onDelete={handleTaskDelete}
         onProgressChange={handleProgressChange}
         onDoubleClick={handleDblClick}
         onSelect={handleSelect}
-        onExpanderClick={handleExpanderClick}
-        listCellWidth={isChecked ? "155px" : ""}
+        listCellWidth={isChecked ? "auto" : ""}
         columnWidth={columnWidth}
+        TaskListHeader={CustomTaskListHeader}
+        onExpanderClick={handleExpanderClick}
+        TaskListTable={(props) => (
+          <CustomTaskListTable
+            {...props}
+            allTasks={tasks}
+            onExpanderClick={handleExpanderClick}
+          />
+        )}
         {...ganttStyles}
       />
     </div>

@@ -11,31 +11,31 @@ export const ViewSwitcher = ({
     <div className="flex flex-col md:flex-row items-center gap-4 p-4">
       <div className="flex gap-2">
         {/* <button
-          className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
           onClick={() => onViewModeChange(ViewMode.QuarterDay)}
         >
           Quarter of Day
         </button>
         <button
-          className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
           onClick={() => onViewModeChange(ViewMode.HalfDay)}
         >
           Half of Day
         </button> */}
         <button
-          className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
           onClick={() => onViewModeChange(ViewMode.Day)}
         >
           Day
         </button>
         <button
-          className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
           onClick={() => onViewModeChange(ViewMode.Week)}
         >
           Week
         </button>
         <button
-          className="px-4 py-2 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
+          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
           onClick={() => onViewModeChange(ViewMode.Month)}
         >
           Month
