@@ -60,6 +60,17 @@ export const CustomTaskListTable = ({
     return visible;
   };
 
+  const getTaskDepth = (task, allTasks) => {
+    let depth = 0;
+    let current = task;
+    while (current.project) {
+      depth += 1;
+      current = (allTasks || []).find((t) => t.id === current.project);
+      if (!current) break;
+    }
+    return depth;
+  };
+
   return (
     <div style={{ width: rowWidth, fontFamily, fontSize }}>
       {getVisibleTasks().map((task) => (
@@ -74,7 +85,12 @@ export const CustomTaskListTable = ({
           }}
           onClick={() => setSelectedTask(task.id)}
         >
-          <div className="pl-3 flex-none px-2 whitespace-nowrap w-70 flex items-center">
+          <div
+            className="pl-3 flex-none px-2 whitespace-nowrap w-70 flex items-center"
+            style={{
+              paddingLeft: `${getTaskDepth(task, allTasks) * 20 + 12}px`,
+            }} // 12px base + 2px per depth
+          >
             {/* Always show expander for projects that have (or could have) children */}
             {task.type === "project" && hasChildren(task) && (
               <button
