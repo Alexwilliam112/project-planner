@@ -19,7 +19,6 @@ const ganttStyles = {
   arrowColor: "#616161",
   arrowIndent: 10,
   todayColor: "rgba(194, 194, 194, 0.5)",
-  
 };
 
 export default function GanttChart() {
@@ -44,8 +43,8 @@ export default function GanttChart() {
       name: "Talenta",
       type: "project",
       block_type: "subproject_core",
-      tpm: "Nata Liong",
-      pm: "Krisna Atteyendra",
+      pm: "Nata Liong",
+      assignee: "Krisna Atteyendra",
       status: "Development",
       project: "P1",
       start: new Date(2025, 4, 1),
@@ -87,9 +86,9 @@ export default function GanttChart() {
       id: "SP2",
       name: "Officeless",
       type: "project",
-      block_type: "subproject_oos",
+      block_type: "subproject_appBuilder",
       pm: "Daffa",
-      sa: "Caroline",
+      assignee: "Caroline",
       status: "Development",
       project: "P1",
       start: new Date(2025, 4, 1),
@@ -127,8 +126,8 @@ export default function GanttChart() {
       name: "Talenta",
       type: "project",
       block_type: "subproject_core",
-      tpm: "Nata Liong",
-      pm: "Krisna Atteyendra",
+      pm: "Nata Liong",
+      assignee: "Krisna Atteyendra",
       status: "Development",
       project: "P12",
       start: new Date(2025, 4, 1),
@@ -170,9 +169,9 @@ export default function GanttChart() {
       id: "SP22",
       name: "Officeless",
       type: "project",
-      block_type: "subproject_oos",
+      block_type: "subproject_enablement",
       pm: "Daffa",
-      sa: "Caroline",
+      assignee: "Caroline",
       status: "Development",
       project: "P12",
       start: new Date(2025, 4, 1),
@@ -217,53 +216,63 @@ export default function GanttChart() {
       )}
       {task.block_type === "subproject_core" && (
         <div>
-          <div className="font-medium">Product Manager: {task.pm}</div>
           <div className="font-medium">
-            Technical Program Manager: {task.tpm}
+            Technical Program Manager: {task.pm}
           </div>
+          <div className="font-medium">Product Manager: {task.assignee}</div>
           <div className="">Status: {task.status}</div>
         </div>
       )}
-      {task.block_type === "subproject_oos" && (
+      {task.block_type === "subproject_appBuilder" && (
         <div>
           <div className="font-medium">Project Manager: {task.pm}</div>
-          <div className="font-medium">System Analyst: {task.sa}</div>
+          <div className="font-medium">System Analyst: {task.assignee}</div>
+          <div className="">Status: {task.status}</div>
+        </div>
+      )}
+      {task.block_type === "subproject_enablement" && (
+        <div>
+          <div className="font-medium">Project Manager: {task.pm}</div>
+          <div className="font-medium">Solution Engineer: {task.assignee}</div>
           <div className="">Status: {task.status}</div>
         </div>
       )}
       <div>Start: {task.start.toLocaleDateString()}</div>
       <div>End: {task.end.toLocaleDateString()}</div>
-      {/* Add any custom info here */}
     </div>
   );
 
-const handleTaskChange = (task) => {
-  console.log("On date change Id:" + task.id);
-  let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+  const handleTaskChange = (task) => {
+    console.log("On date change Id:" + task.id);
+    let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
 
-  // Recursively update all parent projects
-  let currentTask = task;
-  while (currentTask.project) {
-    const [start, end] = getStartEndDateForProject(newTasks, currentTask.project);
-    const projectIndex = newTasks.findIndex((t) => t.id === currentTask.project);
-    if (projectIndex === -1) break;
-    const project = newTasks[projectIndex];
-    if (
-      project.start.getTime() !== start.getTime() ||
-      project.end.getTime() !== end.getTime()
-    ) {
-      const changedProject = { ...project, start, end };
-      newTasks = newTasks.map((t) =>
-        t.id === project.id ? changedProject : t
+    let currentTask = task;
+    while (currentTask.project) {
+      const [start, end] = getStartEndDateForProject(
+        newTasks,
+        currentTask.project
       );
-      currentTask = changedProject;
-    } else {
-      break;
+      const projectIndex = newTasks.findIndex(
+        (t) => t.id === currentTask.project
+      );
+      if (projectIndex === -1) break;
+      const project = newTasks[projectIndex];
+      if (
+        project.start.getTime() !== start.getTime() ||
+        project.end.getTime() !== end.getTime()
+      ) {
+        const changedProject = { ...project, start, end };
+        newTasks = newTasks.map((t) =>
+          t.id === project.id ? changedProject : t
+        );
+        currentTask = changedProject;
+      } else {
+        break;
+      }
     }
-  }
 
-  setTasks(newTasks);
-};
+    setTasks(newTasks);
+  };
 
   const handleTaskDelete = (task) => {
     const conf = window.confirm("Are you sure about " + task.name + " ?");

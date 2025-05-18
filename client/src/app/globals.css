@@ -38,6 +38,26 @@ body {
   border-right: 2px solid #888; /* Make month separator bolder */
 }
 
+.rows > rect {
+  fill: #ffffff;
+}
+
+.rows > rect:hover {
+  fill: #f0f0f0;
+}
+
+.rows > rect:nth-child(even) {
+  fill: #ffffff;
+}
+
+.rows > rect:nth-child(even):hover {
+  fill: #f0f0f0;
+}
+
+.calendar > rect {
+  fill: #f4f5f7;
+}
+
 .gantt-container .bar-project {
   fill: #5c6bc0 !important; /* Indigo for project bars */
   stroke: #3949ab !important;
