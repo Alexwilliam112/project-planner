@@ -237,25 +237,33 @@ export default function GanttChart() {
     </div>
   );
 
-  const handleTaskChange = (task) => {
-    console.log("On date change Id:" + task.id);
-    let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
-    if (task.project) {
-      const [start, end] = getStartEndDateForProject(newTasks, task.project);
-      const project =
-        newTasks[newTasks.findIndex((t) => t.id === task.project)];
-      if (
-        project.start.getTime() !== start.getTime() ||
-        project.end.getTime() !== end.getTime()
-      ) {
-        const changedProject = { ...project, start, end };
-        newTasks = newTasks.map((t) =>
-          t.id === task.project ? changedProject : t
-        );
-      }
+const handleTaskChange = (task) => {
+  console.log("On date change Id:" + task.id);
+  let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+
+  // Recursively update all parent projects
+  let currentTask = task;
+  while (currentTask.project) {
+    const [start, end] = getStartEndDateForProject(newTasks, currentTask.project);
+    const projectIndex = newTasks.findIndex((t) => t.id === currentTask.project);
+    if (projectIndex === -1) break;
+    const project = newTasks[projectIndex];
+    if (
+      project.start.getTime() !== start.getTime() ||
+      project.end.getTime() !== end.getTime()
+    ) {
+      const changedProject = { ...project, start, end };
+      newTasks = newTasks.map((t) =>
+        t.id === project.id ? changedProject : t
+      );
+      currentTask = changedProject;
+    } else {
+      break;
     }
-    setTasks(newTasks);
-  };
+  }
+
+  setTasks(newTasks);
+};
 
   const handleTaskDelete = (task) => {
     const conf = window.confirm("Are you sure about " + task.name + " ?");
