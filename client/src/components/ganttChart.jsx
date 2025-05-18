@@ -12,80 +12,99 @@ const ganttStyles = {
   handleWidth: 8,
   fontFamily: "Segoe UI, Arial, sans-serif",
   fontSize: "15px",
-  barProgressColor: "#4caf50",
+  barProgressColor: "#388e3c",
   barProgressSelectedColor: "#388e3c",
-  barBackgroundColor: "#e0e0e0",
-  barBackgroundSelectedColor: "#bdbdbd",
+  barBackgroundColor: "#683E3E",
+  barBackgroundSelectedColor: "#683E3E",
   arrowColor: "#616161",
   arrowIndent: 10,
-  todayColor: "rgba(255, 167, 167, 0.5)",
+  todayColor: "rgba(194, 194, 194, 0.5)",
 };
 
-export default function App() {
+export default function GanttChart() {
   const [view, setView] = useState(ViewMode.Week);
   const [tasks, setTasks] = useState([
     {
       id: "P1",
-      name: "Main Project",
+      name: "Karyamas Adinusantara",
       type: "project",
+      block_type: "project",
+      type_of_custom: "Core + Officeless",
+      type_of_project: "App Builder",
+      status: "On Progress",
       start: new Date(2025, 4, 1),
       end: new Date(2025, 4, 30),
       progress: 40,
       hideChildren: false,
-      styles: { backgroundColor: "#ffc107", progressColor: "#e0a800" },
+      styles: { backgroundColor: "#B35B0E", progressColor: "#B35B0E" },
     },
     {
       id: "SP1",
-      name: "Subproject A",
+      name: "Talenta",
       type: "project",
+      block_type: "subproject_core",
+      tpm: "Nata Liong",
+      pm: "Krisna Atteyendra",
+      status: "Development",
       project: "P1",
       start: new Date(2025, 4, 1),
       end: new Date(2025, 4, 15),
       progress: 60,
       hideChildren: false,
-      styles: { backgroundColor: "#ffe082", progressColor: "#ffd54f" },
+      styles: { backgroundColor: "#AC0E0E", progressColor: "#AC0E0E" },
     },
     {
       id: "T1",
-      name: "Task A1",
+      name: "RFC Creation",
       type: "task",
       project: "SP1",
       start: new Date(2025, 4, 2),
       end: new Date(2025, 4, 5),
       progress: 100,
-      styles: { backgroundColor: "#aed581", progressColor: "#7cb342" },
     },
     {
       id: "T2",
-      name: "Task A2",
+      name: "Development",
       type: "task",
       project: "SP1",
       start: new Date(2025, 4, 6),
       end: new Date(2025, 4, 10),
       dependencies: ["T1"],
       progress: 50,
-      styles: { backgroundColor: "#81d4fa", progressColor: "#0288d1" },
+    },
+    {
+      id: "T20",
+      name: "E2E Testing",
+      type: "task",
+      project: "SP1",
+      start: new Date(2025, 4, 6),
+      end: new Date(2025, 4, 10),
+      dependencies: ["T2", "T3"],
+      progress: 50,
     },
     {
       id: "SP2",
-      name: "Subproject B",
+      name: "Officeless",
       type: "project",
+      block_type: "subproject_oos",
+      pm: "Daffa",
+      sa: "Caroline",
+      status: "Development",
       project: "P1",
-      start: new Date(2025, 4, 16),
-      end: new Date(2025, 4, 30),
-      progress: 20,
+      start: new Date(2025, 4, 1),
+      end: new Date(2025, 4, 15),
+      progress: 60,
       hideChildren: false,
-      styles: { backgroundColor: "#ffab91", progressColor: "#ff7043" },
+      styles: { backgroundColor: "#550EAC", progressColor: "#550EAC" },
     },
     {
       id: "T3",
-      name: "Task B1",
+      name: "Development",
       type: "task",
       project: "SP2",
       start: new Date(2025, 4, 17),
       end: new Date(2025, 4, 20),
       progress: 10,
-      styles: { backgroundColor: "#b39ddb", progressColor: "#5e35b1" },
     },
   ]);
   const [isChecked, setIsChecked] = useState(true);
@@ -95,6 +114,44 @@ export default function App() {
   } else if (view === ViewMode.Week) {
     columnWidth = 250;
   }
+
+  const MyTooltip = ({ task, fontSize, fontFamily }) => (
+    <div style={{ fontSize, fontFamily, padding: 8 }} className="bg-white">
+      <div>
+        <strong>{task.name}</strong>
+      </div>
+      {task.block_type === "project" && (
+        <div>
+          <div className="font-medium">
+            Type of Custom: {task.type_of_custom}
+          </div>
+          <div className="font-medium">
+            Type of Project: {task.type_of_project}
+          </div>
+          <div className="">Status: {task.status}</div>
+        </div>
+      )}
+      {task.block_type === "subproject_core" && (
+        <div>
+          <div className="font-medium">Product Manager: {task.pm}</div>
+          <div className="font-medium">
+            Technical Program Manager: {task.tpm}
+          </div>
+          <div className="">Status: {task.status}</div>
+        </div>
+      )}
+      {task.block_type === "subproject_oos" && (
+        <div>
+          <div className="font-medium">Project Manager: {task.pm}</div>
+          <div className="font-medium">System Analyst: {task.sa}</div>
+          <div className="">Status: {task.status}</div>
+        </div>
+      )}
+      <div>Start: {task.start.toLocaleDateString()}</div>
+      <div>End: {task.end.toLocaleDateString()}</div>
+      {/* Add any custom info here */}
+    </div>
+  );
 
   const handleTaskChange = (task) => {
     console.log("On date change Id:" + task.id);
@@ -165,6 +222,7 @@ export default function App() {
         columnWidth={columnWidth}
         TaskListHeader={CustomTaskListHeader}
         onExpanderClick={handleExpanderClick}
+        TooltipContent={MyTooltip}
         TaskListTable={(props) => (
           <CustomTaskListTable
             {...props}

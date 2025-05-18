@@ -8,9 +8,9 @@ export const CustomTaskListHeader = ({
 }) => (
   <div
     style={{ height: headerHeight, width: rowWidth, fontFamily, fontSize }}
-    className="flex pl-3"
+    className="flex"
   >
-    <div className="flex-none px-2 font-bold whitespace-nowrap w-70">
+    <div className="pl-8 flex-none px-2 font-bold whitespace-nowrap w-70">
       Task Name
     </div>
     <div className="flex-none px-2 font-bold whitespace-nowrap w-25">
