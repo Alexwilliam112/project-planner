@@ -1,12 +1,27 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { Gantt, ViewMode } from "gantt-task-react";
-import "gantt-task-react/dist/index.css";
+import { Gantt, Task, ViewMode } from "gantt-task-react";
+import { useState } from "react";
+import { getStartEndDateForProject } from "../utils/helpers.js";
+import { ViewSwitcher } from "../components/viewSwitcher";
 
-export default function GanttPage() {
-  const [viewMode, setViewMode] = useState(ViewMode.Day);
-  const ganttContainerRef = useRef(null);
+const ganttStyles = {
+  rowHeight: 50,
+  barCornerRadius: 4,
+  barFill: 60,
+  handleWidth: 8,
+  fontFamily: "Segoe UI, Arial, sans-serif",
+  fontSize: "15px",
+  barProgressColor: "#4caf50",
+  barProgressSelectedColor: "#388e3c",
+  barBackgroundColor: "#e0e0e0",
+  barBackgroundSelectedColor: "#bdbdbd",
+  arrowColor: "#616161",
+  arrowIndent: 10,
+  todayColor: "rgba(255, 167, 167, 0.5)",
+};
 
+export default function App() {
+  const [view, setView] = useState(ViewMode.Day);
   const [tasks, setTasks] = useState([
     {
       id: "P1",
@@ -72,84 +87,81 @@ export default function GanttPage() {
       styles: { backgroundColor: "#b39ddb", progressColor: "#5e35b1" },
     },
   ]);
+  const [isChecked, setIsChecked] = useState(true);
+  let columnWidth = 60;
+  if (view === ViewMode.Month) {
+    columnWidth = 300;
+  } else if (view === ViewMode.Week) {
+    columnWidth = 250;
+  }
 
-  const ganttStyles = {
-    headerHeight: 50,
-    ganttHeight: 500,
-    columnWidth: 80,
-    listCellWidth: "200px", // wider task list column
-    rowHeight: 50,
-    barCornerRadius: 4,
-    barFill: 60,
-    handleWidth: 8,
-    fontFamily: "Segoe UI, Arial, sans-serif",
-    fontSize: "15px",
-    barProgressColor: "#4caf50",
-    barProgressSelectedColor: "#388e3c",
-    barBackgroundColor: "#e0e0e0",
-    barBackgroundSelectedColor: "#bdbdbd",
-    arrowColor: "#616161",
-    arrowIndent: 10,
-    todayColor: "#ffe082",
+  const handleTaskChange = (task) => {
+    console.log("On date change Id:" + task.id);
+    let newTasks = tasks.map((t) => (t.id === task.id ? task : t));
+    if (task.project) {
+      const [start, end] = getStartEndDateForProject(newTasks, task.project);
+      const project =
+        newTasks[newTasks.findIndex((t) => t.id === task.project)];
+      if (
+        project.start.getTime() !== start.getTime() ||
+        project.end.getTime() !== end.getTime()
+      ) {
+        const changedProject = { ...project, start, end };
+        newTasks = newTasks.map((t) =>
+          t.id === task.project ? changedProject : t
+        );
+      }
+    }
+    setTasks(newTasks);
+  };
+
+  const handleTaskDelete = (task) => {
+    const conf = window.confirm("Are you sure about " + task.name + " ?");
+    if (conf) {
+      setTasks(tasks.filter((t) => t.id !== task.id));
+    }
+    return conf;
+  };
+
+  const handleProgressChange = async (task) => {
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+    console.log("On progress change Id:" + task.id);
+  };
+
+  const handleDblClick = (task) => {
+    alert("On Double Click event Id:" + task.id);
+  };
+
+  const handleSelect = (task, isSelected) => {
+    console.log(task.name + " has " + (isSelected ? "selected" : "unselected"));
   };
 
   const handleExpanderClick = (task) => {
-    const updatedTasks = tasks.map((t) => {
-      if (t.id === task.id) {
-        return { ...t, hideChildren: !t.hideChildren };
-      }
-      return t;
-    });
-    setTasks(updatedTasks);
+    setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+    console.log("On expander click Id:" + task.id);
   };
 
-  useEffect(() => {
-    const container = ganttContainerRef.current;
-
-    const handleWheel = (event) => {
-      if (event.ctrlKey) {
-        event.preventDefault();
-        if (event.deltaY < 0) {
-          setViewMode((prev) =>
-            prev === ViewMode.Month
-              ? ViewMode.Week
-              : prev === ViewMode.Week
-              ? ViewMode.Day
-              : ViewMode.Day
-          );
-        } else {
-          setViewMode((prev) =>
-            prev === ViewMode.Day
-              ? ViewMode.Week
-              : prev === ViewMode.Week
-              ? ViewMode.Month
-              : ViewMode.Month
-          );
-        }
-      }
-    };
-
-    if (container) {
-      container.addEventListener("wheel", handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener("wheel", handleWheel);
-      }
-    };
-  }, []);
-
   return (
-    <div style={{ padding: "2rem" }}>
-      <div ref={ganttContainerRef} style={{ height: 600 }}>
-        <Gantt
-          tasks={tasks}
-          viewMode={viewMode}
-          onExpanderClick={handleExpanderClick}
-          {...ganttStyles}
-        />
-      </div>
+    <div>
+      <ViewSwitcher
+        onViewModeChange={(viewMode) => setView(viewMode)}
+        onViewListChange={setIsChecked}
+        isChecked={isChecked}
+      />
+      <h3>Gantt With Unlimited Height</h3>
+      <Gantt
+        tasks={tasks}
+        viewMode={view}
+        onDateChange={handleTaskChange}
+        onDelete={handleTaskDelete}
+        onProgressChange={handleProgressChange}
+        onDoubleClick={handleDblClick}
+        onSelect={handleSelect}
+        onExpanderClick={handleExpanderClick}
+        listCellWidth={isChecked ? "155px" : ""}
+        columnWidth={columnWidth}
+        {...ganttStyles}
+      />
     </div>
   );
 }
