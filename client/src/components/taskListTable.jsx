@@ -7,20 +7,30 @@ export const CustomTaskListHeader = ({
   fontSize,
 }) => (
   <div
-    style={{ height: headerHeight, width: rowWidth, fontFamily, fontSize }}
+    style={{
+      height: headerHeight,
+      width: rowWidth,
+      fontFamily,
+      fontSize,
+      position: "sticky",
+      top: 0,
+      zIndex: 10,
+      background: "#fff", // or your preferred color
+      boxShadow: "0 2px 4px rgba(0,0,0,0.03)", // optional, for separation
+    }}
     className="flex"
   >
     <div className="pl-8 flex-none px-2 font-bold whitespace-nowrap w-70">
       Task Name
+    </div>
+    <div className="flex-none px-2 font-bold whitespace-nowrap w-30">
+      Status
     </div>
     <div className="flex-none px-2 font-bold whitespace-nowrap w-25">
       Start Date
     </div>
     <div className="flex-none px-2 font-bold whitespace-nowrap w-25">
       End Date
-    </div>
-    <div className="flex-none px-2 font-bold whitespace-nowrap w-24">
-      Progress
     </div>
   </div>
 );
@@ -106,14 +116,14 @@ export const CustomTaskListTable = ({
             )}
             {task.name}
           </div>
+          <div className="flex-none px-2 whitespace-nowrap w-30">
+            {task.status ? task.status : task.progress + " %"}
+          </div>
           <div className="flex-none px-2 whitespace-nowrap w-25">
             {task.start instanceof Date ? task.start.toLocaleDateString() : ""}
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-25">
             {task.end instanceof Date ? task.end.toLocaleDateString() : ""}
-          </div>
-          <div className="flex-none px-2 whitespace-nowrap w-24">
-            {task.progress}%
           </div>
         </div>
       ))}

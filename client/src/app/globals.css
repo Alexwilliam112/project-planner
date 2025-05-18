@@ -47,8 +47,8 @@ body {
   font-weight: bold;
 }
 
-.gantt-container .task-list-item[data-task-type='task'][data-has-children='true'] {
+.gantt-container
+  .task-list-item[data-task-type="task"][data-has-children="true"] {
   font-weight: bold;
   background-color: #f8f9fa;
 }
-
