@@ -1,11 +1,7 @@
-"use client";
+'use client'
 
-import GanttPage from "@/components/ganttChart";
+import GanttPage from '@/components/ganttChart'
 
 export default function Home() {
-  return (
-    <>
-      <GanttPage />
-    </>
-  );
+  return <GanttPage />
 }
