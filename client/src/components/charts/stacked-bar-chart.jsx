@@ -1,11 +1,11 @@
 'use client'
 
 import { ChartContainer } from '@/components/ui/chart'
-import { BarChart, Bar } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 
 export default function StackedBarChart({ data }) {
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer config={{}} className="min-h-[200px] w-full">
       <BarChart
         data={data}
         margin={{
@@ -17,6 +17,8 @@ export default function StackedBarChart({ data }) {
       >
         <Bar dataKey="pv" stackId="a" fill="#8884d8" />
         <Bar dataKey="uv" stackId="a" fill="#82ca9d" />
+        <XAxis dataKey="name" />
+        <Tooltip />
       </BarChart>
     </ChartContainer>
   )
