@@ -1,9 +1,9 @@
 'use client'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { useState } from 'react'
-import { getStartEndDateForProject } from '../utils/helpers.js'
-import { ViewSwitcher } from '../components/viewSwitcher'
-import { CustomTaskListTable, CustomTaskListHeader } from './taskListTable.jsx'
+import { getStartEndDateForProject } from '@/utils/helpers.js'
+import { ViewSwitcher } from './view-switcher.jsx'
+import { CustomTaskListTable, CustomTaskListHeader } from './task-list-table.jsx'
 
 const ganttStyles = {
   rowHeight: 50,
@@ -313,7 +313,7 @@ export default function GanttChart() {
   }
 
   return (
-    <div>
+    <div className="border rounded-md">
       <ViewSwitcher
         onViewModeChange={(viewMode) => setView(viewMode)}
         onViewListChange={setIsChecked}

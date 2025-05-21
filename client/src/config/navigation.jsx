@@ -14,8 +14,8 @@ export const navItems = [
     icon: <FolderCodeIcon />,
   },
   {
-    title: 'Milestones',
-    href: '/milestones',
+    title: 'Gantt Chart',
+    href: '/gantt-chart',
     icon: <Milestone />,
   },
   {
