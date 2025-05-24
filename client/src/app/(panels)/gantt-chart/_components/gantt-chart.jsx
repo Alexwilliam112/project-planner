@@ -250,19 +250,6 @@ export default function GanttChart() {
     </div>
   )
 
-  const handleAddTask = () => {
-    const currentDate = new Date()
-    const newTask = {
-      id: Date.now().toString(),
-      name: 'New Task',
-      type: 'task',
-      progress: 0,
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 2),
-    }
-    setTasks((tasks) => [...tasks, newTask])
-  }
-
   const handleTaskChange = (task) => {
     console.log('On date change Id:' + task.id)
     let newTasks = tasks.map((t) => (t.id === task.id ? task : t))
@@ -338,7 +325,6 @@ export default function GanttChart() {
             {...props}
             allTasks={tasks}
             onExpanderClick={handleExpanderClick}
-            onAddTask={handleAddTask}
           />
         )}
         {...ganttStyles}
