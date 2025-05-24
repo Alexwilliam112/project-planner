@@ -5,6 +5,9 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { projectsService } from '@/services/index.mjs'
+import InputField from '@/components/fields/input-field'
 
 const idName = z.object({
   id: z.string(),
@@ -34,18 +37,22 @@ const createProjectSchema = z.object({
 })
 
 export default function ProjectsCreateOverlay() {
+  const createMutation = useMutation({
+    mutationKey: ['create-project'],
+    mutationFn: projectsService.create,
+  })
+
   const form = useForm({
     resolver: zodResolver(createProjectSchema),
   })
 
-  const onSubmit = (values: z.infer<typeof createProjectSchema>) => {}
+  const onSubmit = (values) => {}
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-1 md:grid-cols-2"
-      ></form>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2">
+        <InputField name={'zoho_url'} label={'Zoho URL'} />
+      </form>
     </Form>
   )
 }
