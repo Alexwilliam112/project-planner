@@ -1,5 +1,6 @@
 import { Poppins } from 'next/font/google'
 import './globals.css'
+import AppConfigProvider from '@/providers/app-config-provider'
 
 export const metadata = {
   title: 'Create Next App',
@@ -14,7 +15,9 @@ const poppins = Poppins({
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${poppins.className} antialiased`}>{children}</body>
+      <body className={`${poppins.className} antialiased`}>
+        <AppConfigProvider>{children}</AppConfigProvider>
+      </body>
     </html>
   )
 }
