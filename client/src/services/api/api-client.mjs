@@ -1,5 +1,6 @@
 'use client'
 
+import axios from 'axios'
 import { storageService } from '../storage/storage-service.mjs'
 
 const BASE_URL = 'https://api-oos.jojonomic.com/27407'
