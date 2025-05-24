@@ -70,23 +70,12 @@ const renderActiveShape = (props) => {
 export default function CustomActivePieChart({ data }) {
   const [activeIndex, setActiveIndex] = useState(0)
 
-  const chartConfig = {
-    complete: {
-      label: 'Complete',
-      color: '#2563eb',
-    },
-    on_progress: {
-      label: 'On Progress',
-      color: '#60a5fa',
-    },
-  }
-
   const onPieEnter = (_, index) => {
     setActiveIndex(index)
   }
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+    <ChartContainer config={{}} className="min-h-[200px] w-full aspect-video">
       <PieChart accessibilityLayer>
         <Pie
           activeIndex={activeIndex}

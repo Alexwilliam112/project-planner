@@ -1,6 +1,5 @@
 'use client'
 
-import CustomActivePieChart from '@/components/charts/custom-active-pie-chart'
 import StackedBarChart from '@/components/charts/stacked-bar-chart'
 
 export default function PriorityChart() {

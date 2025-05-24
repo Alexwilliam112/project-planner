@@ -3,7 +3,7 @@
 import { ChartContainer } from '@/components/ui/chart'
 import { BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
 
-export default function StackedBarChart({ data }) {
+export default function SimpleBarChart({ data }) {
   return (
     <ChartContainer config={{}} className="min-h-[200px] w-full aspect-video">
       <BarChart
@@ -15,9 +15,9 @@ export default function StackedBarChart({ data }) {
           bottom: 5,
         }}
       >
-        <Bar dataKey="pv" stackId="a" fill="#8884d8" />
-        <Bar dataKey="uv" stackId="a" fill="#82ca9d" />
+        <Bar dataKey="uv" fill="#82ca9d" />
         <XAxis dataKey="name" />
+        <YAxis />
         <Tooltip />
       </BarChart>
     </ChartContainer>
