@@ -1,6 +1,6 @@
 'use client'
 
-import { DataTableColumnHeader } from '@/components/table/column-header'
+import { DataTableColumnHeader } from '@/components/table/column-header.jsx'
 import { format } from 'date-fns'
 
 export const projectsColumns = [
