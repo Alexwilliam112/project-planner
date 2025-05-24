@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useFormContext } from 'react-hook-form'
 
-export default function InputField({ name, label, placeholder, description }) {
+export default function InputField({ name, label, placeholder, description, ...props }) {
   const form = useFormContext()
 
   return (
@@ -22,7 +22,7 @@ export default function InputField({ name, label, placeholder, description }) {
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} {...field} />
+            <Input placeholder={placeholder} {...field} {...props} />
           </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />

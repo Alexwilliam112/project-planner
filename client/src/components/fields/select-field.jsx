@@ -17,7 +17,15 @@ import {
 } from '@/components/ui/select'
 import { useFormContext } from 'react-hook-form'
 
-export default function SelectField({ name, label, placeholder, description, options }) {
+export default function SelectField({
+  name,
+  label,
+  placeholder,
+  description,
+  options = [],
+  optionValue = '',
+  optionLabel = '',
+}) {
   const form = useFormContext()
 
   return (
@@ -35,9 +43,9 @@ export default function SelectField({ name, label, placeholder, description, opt
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {options.data.map((d) => (
-                  <SelectItem key={d[options.optionValue]} value={d[options.optionValue]}>
-                    {d[options.optionLabel]}
+                {options.map((d) => (
+                  <SelectItem key={d[optionValue]} value={d[optionValue]}>
+                    {d[optionLabel]}
                   </SelectItem>
                 ))}
               </SelectContent>
