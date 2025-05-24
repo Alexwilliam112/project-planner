@@ -43,7 +43,6 @@ export const CustomTaskListTable = ({
   tasks,
   selectedTaskId,
   setSelectedTask,
-  onAddTask,
   allTasks,
   onExpanderClick,
 }) => {
@@ -110,22 +109,6 @@ export const CustomTaskListTable = ({
                 title={task.hideChildren ? "Expand" : "Collapse"}
               >
                 {task.hideChildren ? "▶" : "▼"}
-              </button>
-            )}
-            {task.block_type == "subproject" && (
-              <button
-                className="ml-1 mb-1 text-blue-600 hover:text-blue-800 text-lg font-bold focus:outline-none"
-                style={{
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                  lineHeight: 1,
-                  cursor: "pointer",
-                }}
-                onClick={() => onAddTask && onAddTask()}
-                title="Add subtask"
-              >
-                +
               </button>
             )}
             {task.name}
