@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/select'
 import { useFormContext } from 'react-hook-form'
 
-export default function InputField({ name, label, placeholder, description, options }) {
+export default function SelectField({ name, label, placeholder, description, options }) {
   const form = useFormContext()
 
   return (

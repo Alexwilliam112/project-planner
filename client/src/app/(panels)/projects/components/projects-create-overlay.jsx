@@ -8,32 +8,23 @@ import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { projectsService } from '@/services/index.mjs'
 import InputField from '@/components/fields/input-field'
-
-const idName = z.object({
-  id: z.string(),
-  name: z.string(),
-})
-
-const badge = z.object({
-  id: z.string(),
-  name: z.string(),
-  color: z.string(),
-})
+import SelectField from '@/components/fields/select-field'
+import TextareaField from '@/components/fields/textarea-field'
 
 const createProjectSchema = z.object({
   zoho_url: z.string(),
-  project_owner_id: idName,
-  product_id: badge,
-  category_id: idName,
-  priority_id: badge,
-  status_id: badge,
+  project_owner_id: z.string(),
+  product_id: z.string(),
+  category_id: z.string(),
+  priority_id: z.string(),
+  status_id: z.string(),
   note: z.string(),
   date_start: z.number(),
   date_end: z.number(),
   name: z.string(),
   company: z.string(),
-  est_mh: z.number(),
-  division_id: idName,
+  est_mh: z.coerce.number(),
+  division_id: z.string(),
 })
 
 export default function ProjectsCreateOverlay() {
@@ -52,6 +43,12 @@ export default function ProjectsCreateOverlay() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2">
         <InputField name={'zoho_url'} label={'Zoho URL'} />
+        <SelectField name={'project_owner_id'} label={'Project Owner'} />
+        <SelectField name={'product_id'} label={'Project Type'} />
+        <SelectField name={'category_id'} label={'Category'} />
+        <SelectField name={'priority_id'} label={'Priority'} />
+        <SelectField name={'status_id'} label={'Status'} />
+        <TextareaField name={'note'} label={'Note'} />
       </form>
     </Form>
   )
