@@ -5,7 +5,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { projectsService } from '@/services/index.mjs'
 import InputField from '@/components/fields/input-field'
 import SelectField from '@/components/fields/select-field'
@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button'
 import CalendarField from '@/components/fields/calendar-field'
 import { masterService } from '@/services/index.mjs'
+import { Pencil } from 'lucide-react'
 
 const createProjectSchema = z.object({
   zoho_url: z.string(),
@@ -38,6 +39,8 @@ const createProjectSchema = z.object({
 })
 
 export default function ProjectsOverlay({ data }) {
+  const queryClient = useQueryClient()
+
   const [open, setOpen] = React.useState(false)
 
   // Mutations
@@ -45,10 +48,26 @@ export default function ProjectsOverlay({ data }) {
   const createMutation = useMutation({
     mutationKey: ['create-project'],
     mutationFn: projectsService.create,
+    onSuccess: () => {
+      setOpen(false)
+      queryClient.refetchQueries(['projects'])
+    },
   })
   const updateMutation = useMutation({
     mutationKey: ['update-project'],
     mutationFn: projectsService.update,
+    onSuccess: () => {
+      setOpen(false)
+      queryClient.refetchQueries(['projects'])
+    },
+  })
+  const deleteMutation = useMutation({
+    mutationKey: ['delete-project'],
+    mutationFn: projectsService.delete,
+    onSuccess: () => {
+      setOpen(false)
+      queryClient.refetchQueries(['projects'])
+    },
   })
 
   //Queries
@@ -83,6 +102,12 @@ export default function ProjectsOverlay({ data }) {
   const defaultValues = data
     ? {
         ...data,
+        project_owner_id: data.project_owner_id.id,
+        product_id: data.product_id.id,
+        division_id: data.division_id.id,
+        category_id: data.category_id.id,
+        priority_id: data.priority_id.id,
+        status_id: data.status_id.id,
         date_start: new Date(data.date_start),
         date_end: new Date(data.date_end),
       }
@@ -93,7 +118,6 @@ export default function ProjectsOverlay({ data }) {
   })
 
   const onSubmit = async (values) => {
-    console.log(values)
     const project_owner_id = projectOwnerQuery.data.find((i) => i.id === values.project_owner_id)
     const product_id = productQuery.data.find((i) => i.id === values.product_id)
     const division_id = divisionQuery.data.find((i) => i.id === values.division_id)
@@ -103,32 +127,59 @@ export default function ProjectsOverlay({ data }) {
     const date_start = new Date(values.date_start).getTime()
     const date_end = new Date(values.date_end).getTime()
 
-    await createMutation.mutateAsync({
-      ...values,
-      project_owner_id,
-      product_id,
-      division_id,
-      category_id,
-      priority_id,
-      status_id,
-      date_start,
-      date_end,
-    })
+    if (data) {
+      await updateMutation.mutateAsync({
+        id_project: data.id_project,
+        payload: {
+          ...values,
+          project_owner_id,
+          product_id,
+          division_id,
+          category_id,
+          priority_id,
+          status_id,
+          date_start,
+          date_end,
+        },
+      })
+    } else {
+      await createMutation.mutateAsync({
+        ...values,
+        project_owner_id,
+        product_id,
+        division_id,
+        category_id,
+        priority_id,
+        status_id,
+        date_start,
+        date_end,
+      })
+    }
+  }
+
+  const onDelete = async () => {
+    await deleteMutation.mutateAsync(data.id_project)
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add</Button>
+        {data ? (
+          <Button size={'icon'} className={'w-7 h-7'} variant={'ghost'}>
+            <Pencil className="w-2 h-2" />
+          </Button>
+        ) : (
+          <Button>Add</Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Project</DialogTitle>
+          <DialogTitle>{data ? 'Update Project' : 'Create New Project'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[85vh] overflow-auto pl-4"
+            className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[85vh] overflow-auto pb-8 px-1"
           >
             <InputField name={'name'} label={'Project Name'} />
             <InputField name={'company'} label={'Company'} />
@@ -183,9 +234,26 @@ export default function ProjectsOverlay({ data }) {
             </div>
 
             <div className="space-y-2 mt-4 col-span-1 md:col-span-2">
-              <Button type="submit" className={'w-full'} disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Saving...' : 'Save'}
+              <Button
+                type="submit"
+                className={'w-full'}
+                disabled={
+                  createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
+                }
+              >
+                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
+              {data && (
+                <Button
+                  type="button"
+                  className={'w-full'}
+                  variant={'destructive'}
+                  onClick={onDelete}
+                  disabled={updateMutation.isPending || deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                </Button>
+              )}
             </div>
           </form>
         </Form>

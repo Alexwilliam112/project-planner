@@ -22,7 +22,7 @@ const projectsService = {
 
     return data
   },
-  async update(id_project, payload) {
+  async update({ id_project, payload }) {
     const response = await apiClient.post(PROJECTS_API.UPDATE, payload, { params: { id_project } })
 
     const { error, message, data } = response.data
@@ -31,7 +31,7 @@ const projectsService = {
 
     return data
   },
-  async updatePIC(id_project, payload) {
+  async updatePIC({ id_project, payload }) {
     const response = await apiClient.post(PROJECTS_API.UPDATE_PIC, payload, {
       params: { id_project },
     })
