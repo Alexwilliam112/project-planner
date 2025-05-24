@@ -1,7 +1,7 @@
 'use client'
 
 import { apiClient } from '../api/api-client.mjs'
-import { PROJECTS_API } from './endpoints.mjs'
+import { PROJECTS_API } from './projects-endpoints.mjs'
 
 const projectsService = {
   async getAll() {
