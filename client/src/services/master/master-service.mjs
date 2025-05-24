@@ -1,6 +1,7 @@
 'use client'
 
 import { MASTER_API } from './master-endpoints.mjs'
+import { apiClient } from '../api/api-client.mjs'
 
 const masterService = {
   async getDivisions() {
