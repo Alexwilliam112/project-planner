@@ -8,7 +8,7 @@ export default function DashboardPage() {
     <main className="space-y-4">
       <Charts />
 
-      <div className="overflow-auto">
+      <div className="overflow-x-auto min-h-screen">
         <Board />
       </div>
     </main>
