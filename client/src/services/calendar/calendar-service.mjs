@@ -1,5 +1,6 @@
 'use client'
 
+import { apiClient } from '../api/api-client.mjs'
 import { CALENDAR_API } from './calendar-endpoints.mjs'
 
 const calendarService = {

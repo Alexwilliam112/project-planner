@@ -5,5 +5,13 @@ import { projectsService } from './projects/projects-service.mjs'
 import { ganttService } from './gantt-chart/gantt-service.mjs'
 import { masterService } from './master/master-service.mjs'
 import { tasksService } from './tasks/tasks-service.mjs'
+import { calendarService } from './calendar/calendar-service.mjs'
 
-export { storageService, projectsService, ganttService, masterService, tasksService }
+export {
+  storageService,
+  projectsService,
+  ganttService,
+  masterService,
+  tasksService,
+  calendarService,
+}
