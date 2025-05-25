@@ -4,7 +4,7 @@ import React from 'react'
 import { DataTable } from '@/components/table/data-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { masterService, tasksService } from '@/services/index.mjs'
-import { taskSummaryColumns } from './task-summary-columns'
+import { createTaskSummaryColumns } from './task-summary-columns'
 import TaskOverlay from '../../dashboard/_components/task-overlay'
 import { Button } from '@/components/ui/button'
 
@@ -65,12 +65,14 @@ export default function TaskSummaryTable() {
     }
   }
 
+  const columns = createTaskSummaryColumns({ handleEdit: handleEditTask })
+
   return (
     <div className="space-y-2">
       <Button size="sm" onClick={handleCreateTask}>
         Add
       </Button>
-      <DataTable columns={taskSummaryColumns} data={taskSummaryQuery.data || []} />
+      <DataTable columns={columns} data={taskSummaryQuery.data || []} />
 
       <TaskOverlay
         open={open}
