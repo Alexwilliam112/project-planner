@@ -49,7 +49,7 @@ const masterService = {
 
     return data
   },
-  async getStatuses({ params } = { params: { type: 'PROJECT' } }) {
+  async getStatuses({ params } = { params }) {
     const response = await apiClient.get(MASTER_API.GET_STATUS, { params })
 
     const { error, message, data } = response.data

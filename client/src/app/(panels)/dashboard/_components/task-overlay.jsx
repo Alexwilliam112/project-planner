@@ -21,7 +21,6 @@ import { useQuery } from '@tanstack/react-query'
 import { masterService } from '@/services/index.mjs'
 import CalendarField from '@/components/fields/calendar-field'
 import SelectField from '@/components/fields/select-field'
-import { projectsService } from '@/services'
 import { utc7Offset } from '@/lib/utils'
 
 const taskSchema = z.object({
@@ -38,6 +37,7 @@ const taskSchema = z.object({
   priority_id: z.string().optional(),
   milestone_id: z.string().optional(),
   status_id: z.string().optional(),
+  product_id: z.string().optional(),
   progress: z.coerce.number().optional(),
 })
 
@@ -63,6 +63,10 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
   const taskStatusQuery = useQuery({
     queryKey: ['task-status'],
     queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
+  })
+  const prouductQuery = useQuery({
+    queryKey: ['products'],
+    queryFn: masterService.getProducts,
   })
 
   const form = useForm({
@@ -117,6 +121,7 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
     const priority_id = priorityQuery.data?.find((a) => a.id === values.priority_id)
     const status_id = taskStatusQuery.data?.find((a) => a.id === values.status_id)
     const milestone_id = mileStoneQuery.data?.find((a) => a.id === values.milestone_id)
+    const product_id = prouductQuery.data?.find((a) => a.id === values.product_id)
     const date_start = new Date(values.date_range.from).getTime() + utc7Offset
     const date_end = new Date(values.date_range.to).getTime() + utc7Offset
     const deadline = new Date(values.deadline).getTime() + utc7Offset
@@ -153,6 +158,12 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
           name: milestone_id.name,
         }
       : undefined
+    submitValues.product_id = product_id
+      ? {
+          id: product_id.id,
+          name: product_id.name,
+        }
+      : undefined
 
     console.log(submitValues)
     onSubmit(submitValues)
@@ -170,13 +181,18 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
       deadline: task?.deadline ? new Date(task?.deadline) : new Date(),
       priority_id: task?.priority_id?.id || '',
       assignee_id: task?.assignee_id?.id || '',
+      project_id: task?.project_id?.id || '',
+      milestone_id: task?.milestone_id?.id || '',
+      status_id: task?.status_id?.id || '',
+      product_id: task?.product_id?.id || '',
+      progress: task?.progress || 0,
     })
   }, [task])
 
-  const watchRange = form.watch('date_start')
+  const { errors } = form.formState
   React.useEffect(() => {
-    console.log(watchRange)
-  }, [watchRange])
+    console.log(errors)
+  }, [errors])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -281,6 +297,14 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
               {task && (
                 <>
                   <SelectField
+                    label={'Product'}
+                    name={'product_id'}
+                    optionLabel="name"
+                    optionValue="id"
+                    options={prouductQuery.data || []}
+                  />
+
+                  <SelectField
                     label={'Priority'}
                     name={'priority_id'}
                     optionLabel="name"
@@ -294,6 +318,20 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
                     optionLabel="name"
                     optionValue="id"
                     options={taskStatusQuery.data || []}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="progress"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Note</FormLabel>
+                        <FormControl>
+                          <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </>
               )}
