@@ -31,8 +31,8 @@ const tasksService = {
 
     return data
   },
-  async create({ payload }) {
-    const response = await apiClient.post(TASKS_API.CREATE, payload)
+  async create({ payload, id_project }) {
+    const response = await apiClient.post(TASKS_API.CREATE, payload, { params: { id_project } })
 
     const { error, message, data } = response.data
 

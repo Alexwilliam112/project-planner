@@ -67,6 +67,15 @@ const masterService = {
 
     return data
   },
+  async getProjects() {
+    const response = await apiClient.get(MASTER_API.GET_PROJECTS)
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
 }
 
 export { masterService }

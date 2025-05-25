@@ -33,18 +33,15 @@ const taskSchema = z.object({
     to: z.date(),
   }),
   deadline: z.date(),
-  priority_id: z.string().min(1, 'Priority is required'),
+  project_id: z.string(),
   assignee_id: z.string().min(1, 'Assignee is required'),
+  priority_id: z.string().optional(),
+  milestone_id: z.string().optional(),
+  status_id: z.string().optional(),
+  progress: z.coerce.number().optional(),
 })
 
-export default function TaskOverlay({
-  task = {},
-  milestone,
-  open,
-  onOpenChange,
-  onSubmit,
-  isSubmitting,
-}) {
+export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, isSubmitting }) {
   const priorityQuery = useQuery({
     queryKey: ['priority'],
     queryFn: masterService.getPriorities,
@@ -56,16 +53,45 @@ export default function TaskOverlay({
   })
 
   const projectsQuery = useQuery({
-    queryKey: ['projects'],
-    queryFn: projectsService.getAll,
+    queryKey: ['select-project'],
+    queryFn: masterService.getProjects,
   })
-  const statusesQuery = useQuery({
-    queryKey: ['task-status'],
+  const mileStoneQuery = useQuery({
+    queryKey: ['milestones'],
     queryFn: () => masterService.getStatuses({ params: { type: 'MILESTONE' } }),
+  })
+  const taskStatusQuery = useQuery({
+    queryKey: ['task-status'],
+    queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
   })
 
   const form = useForm({
-    resolver: zodResolver(taskSchema),
+    resolver: zodResolver(
+      taskSchema.superRefine((data, ctx) => {
+        if (task) {
+          if (!data.priority_id || data.priority_id.trim() === '') {
+            ctx.addIssue({
+              path: ['priority_id'],
+              code: z.ZodIssueCode.custom,
+            })
+          }
+
+          if (!data.status_id || data.status_id.trim() === '') {
+            ctx.addIssue({
+              path: ['status_id'],
+              code: z.ZodIssueCode.custom,
+            })
+          }
+
+          if (!data.progress) {
+            ctx.addIssue({
+              path: ['progress'],
+              code: z.ZodIssueCode.custom,
+            })
+          }
+        }
+      })
+    ),
     defaultValues: {
       name: task?.name || '',
       note: task?.note || '',
@@ -84,22 +110,52 @@ export default function TaskOverlay({
     form.formState.errors[fieldName] ? 'border-red-500' : 'border-gray-300'
 
   const handleSubmit = (values) => {
-    const milestone_id = statusesQuery.data.find((a) => a.id === milestone.id)
+    console.log(values)
+
     const assignee_id = assigneeQuery.data?.find((a) => a.id === values.assignee_id)
     const project_id = projectsQuery.data?.find((a) => a.id === values.project_id)
-    const priority_id = projectsQuery.data?.find((a) => a.id === values.priority_id)
+    const priority_id = priorityQuery.data?.find((a) => a.id === values.priority_id)
+    const status_id = taskStatusQuery.data?.find((a) => a.id === values.status_id)
+    const milestone_id = mileStoneQuery.data?.find((a) => a.id === values.milestone_id)
     const date_start = new Date(values.date_range.from).getTime() + utc7Offset
     const date_end = new Date(values.date_range.to).getTime() + utc7Offset
+    const deadline = new Date(values.deadline).getTime() + utc7Offset
 
-    onSubmit({
+    const submitValues = {
       ...values,
-      milestone_id,
-      assignee_id,
-      project_id,
-      priority_id,
+      assignee_id: {
+        id: assignee_id.id,
+        name: assignee_id.name,
+      },
+      project_id: {
+        id: project_id.id,
+        name: project_id.name,
+      },
       date_start,
       date_end,
-    })
+      deadline,
+    }
+    submitValues.priority_id = priority_id
+      ? {
+          id: priority_id.id,
+          name: priority_id.name,
+        }
+      : undefined
+    submitValues.status_id = status_id
+      ? {
+          id: status_id.id,
+          name: status_id.name,
+        }
+      : undefined
+    submitValues.milestone_id = milestone_id
+      ? {
+          id: milestone_id.id,
+          name: milestone_id.name,
+        }
+      : undefined
+
+    console.log(submitValues)
+    onSubmit(submitValues)
   }
 
   React.useEffect(() => {
@@ -149,6 +205,44 @@ export default function TaskOverlay({
                 )}
               />
 
+              <SelectField
+                label={'Assignee'}
+                name={'assignee_id'}
+                optionLabel="name"
+                optionValue="id"
+                options={assigneeQuery.data || []}
+              />
+
+              <FormField
+                control={form.control}
+                name="est_mh"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estimated Hours</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <SelectField
+                label={'Project'}
+                name={'project_id'}
+                optionLabel="name"
+                optionValue="id"
+                options={projectsQuery.data || []}
+              />
+
+              <SelectField
+                label={'Milestone'}
+                name={'milestone_id'}
+                optionLabel="name"
+                optionValue="id"
+                options={mileStoneQuery.data || []}
+              />
+
               <FormField
                 control={form.control}
                 name="date_range"
@@ -168,19 +262,7 @@ export default function TaskOverlay({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="est_mh"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estimated Hours</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <CalendarField label={'Deadline'} name={'deadline'} />
 
               <FormField
                 control={form.control}
@@ -196,31 +278,25 @@ export default function TaskOverlay({
                 )}
               />
 
-              <CalendarField label={'Deadline'} name={'deadline'} />
+              {task && (
+                <>
+                  <SelectField
+                    label={'Priority'}
+                    name={'priority_id'}
+                    optionLabel="name"
+                    optionValue="id"
+                    options={priorityQuery.data || []}
+                  />
 
-              <SelectField
-                label={'Project'}
-                name={'project_id'}
-                optionLabel="name"
-                optionValue="id_project"
-                options={projectsQuery.data || []}
-              />
-
-              <SelectField
-                label={'Priority'}
-                name={'priority_id'}
-                optionLabel="name"
-                optionValue="id"
-                options={priorityQuery.data || []}
-              />
-
-              <SelectField
-                label={'Assignee'}
-                name={'assignee_id'}
-                optionLabel="name"
-                optionValue="id"
-                options={assigneeQuery.data || []}
-              />
+                  <SelectField
+                    label={'Status'}
+                    name={'status_id'}
+                    optionLabel="name"
+                    optionValue="id"
+                    options={taskStatusQuery.data || []}
+                  />
+                </>
+              )}
             </div>
 
             <DialogFooter>

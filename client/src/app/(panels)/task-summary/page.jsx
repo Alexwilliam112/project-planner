@@ -7,6 +7,7 @@ export default function TaskSummaryPage() {
   return (
     <main className="space-y-4">
       <ResourceCapacityTable />
+
       <TaskSummaryTable />
     </main>
   )

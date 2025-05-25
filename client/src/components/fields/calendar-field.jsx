@@ -124,7 +124,6 @@ export default function CalendarField({ name, label, placeholder, description })
                       year: getYear(newMonth),
                     })
                   }}
-                  disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
                   initialFocus
                 />
               </PopoverContent>

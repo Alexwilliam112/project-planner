@@ -12,7 +12,7 @@ export const taskSummaryColumns = [
     header: 'Project',
   },
   {
-    accessorKey: 'status_id.name',
+    accessorKey: 'milestone_id.name',
     header: 'Milestone',
   },
   {
@@ -43,12 +43,12 @@ export const taskSummaryColumns = [
   },
   {
     accessorKey: 'est_mh',
-    header: 'Estimation Manhours Engineer',
+    header: 'Est MH',
   },
   {
     accessorKey: 'progress',
     header: 'Progress',
-    cell: ({ row }) => row.original.progress + '%',
+    cell: ({ row }) => row.original.progress || 0 + '%',
   },
   {
     accessorKey: 'note',
