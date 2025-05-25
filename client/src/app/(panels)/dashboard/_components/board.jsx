@@ -9,6 +9,8 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { useSearchParams } from 'next/navigation'
 import { mocksTasks } from '@/lib/dummy/tasks.mjs'
+import { useQuery } from '@tanstack/react-query'
+import { masterService, tasksService } from '@/services/index.mjs'
 
 function getContrastColor(hexColor) {
   // Remove the hash if it exists
@@ -27,7 +29,15 @@ function getContrastColor(hexColor) {
 }
 
 export function Board() {
-  const [tasks, setTasks] = useState(mocksTasks)
+  const taskQuery = useQuery({
+    queryKey: ['tasksService.getAll'],
+    queryFn: tasksService.getAll,
+  })
+  const statusQuery = useQuery({
+    queryKey: ['status'],
+    queryFn: masterService.getStatuses,
+  })
+
   const [indexStatus, setIndexStatus] = useState([
     {
       _id: '6815dbfa2398e8a9b9124993',
@@ -94,8 +104,8 @@ export function Board() {
   }
 
   return (
-    <div className="relative flex h-fit w-full">
-      {indexStatus.map((status) => (
+    <div className="relative flex h-fit w-full shrink">
+      {statusQuery.data?.map((status) => (
         <div
           key={status._id}
           className="flex min-h-full w-[280px] flex-none flex-col border-r last:border-r-0"
@@ -114,7 +124,7 @@ export function Board() {
               </div>
               <span className="text-sm font-medium">{status.name}</span>
               <Badge variant="secondary" className="bg-white/20 text-xs">
-                {tasks.filter((task) => task.status_id.id === status.id_record).length}
+                {taskQuery.data?.filter((task) => task.status_id.id === status.id).length}
               </Badge>
             </div>
             {/* <div className="flex items-center gap-1">
@@ -156,8 +166,8 @@ export function Board() {
 
           {/* Column Content */}
           <div className="flex flex-1 flex-col gap-3 p-2">
-            {tasks
-              .filter((task) => task.status_id.id === status.id_record)
+            {taskQuery.data
+              ?.filter((task) => task.status_id.id === status.id)
               .map((task) => (
                 <Card key={task.id_task} className="p-3 gap-2 hover:bg-gray-50">
                   <div

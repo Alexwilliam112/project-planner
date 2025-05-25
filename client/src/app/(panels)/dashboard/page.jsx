@@ -7,7 +7,10 @@ export default function DashboardPage() {
   return (
     <main className="space-y-4">
       <Charts />
-      <Board />
+
+      <div className="overflow-auto">
+        <Board />
+      </div>
     </main>
   )
 }
