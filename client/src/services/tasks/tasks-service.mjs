@@ -4,8 +4,8 @@ import { apiClient } from '../api/api-client.mjs'
 import { TASKS_API } from './tasks-endpoints.mjs'
 
 const tasksService = {
-  async getAll() {
-    const response = await apiClient.get(TASKS_API.GET_ALL)
+  async getAll({ params }) {
+    const response = await apiClient.get(TASKS_API.GET_ALL, { params })
 
     const { error, message, data } = response.data
 
