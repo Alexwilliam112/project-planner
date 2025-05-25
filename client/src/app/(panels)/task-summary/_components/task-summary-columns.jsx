@@ -4,30 +4,19 @@ import { format } from 'date-fns'
 import { Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-export const createTaskSummaryColumns = ({ handleEdit, handleDelete }) => [
+export const createTaskSummaryColumns = ({ handleEdit }) => [
   {
     id: 'actions',
     header: 'Actions',
     cell: ({ row }) => (
-      <div className="flex gap-2">
-        <Button
-          className="w-8 h-8"
-          size="icon"
-          variant="outline"
-          onClick={() => handleEdit(row.original)}
-        >
-          <Pencil />
-        </Button>
-
-        <Button
-          className="w-8 h-8"
-          size="icon"
-          variant="destructive"
-          onClick={() => handleDelete(row.original)}
-        >
-          <Trash2 />
-        </Button>
-      </div>
+      <Button
+        className="w-8 h-8"
+        size="icon"
+        variant="outline"
+        onClick={() => handleEdit(row.original)}
+      >
+        <Pencil />
+      </Button>
     ),
   },
   {

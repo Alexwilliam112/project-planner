@@ -41,17 +41,23 @@ const taskSchema = z.object({
   progress: z.coerce.number().optional(),
 })
 
-export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, isSubmitting }) {
+export default function TaskOverlay({
+  task = {},
+  open,
+  onOpenChange,
+  onSubmit,
+  onDelete,
+  isSubmitting,
+  isDeleting,
+}) {
   const priorityQuery = useQuery({
     queryKey: ['priority'],
     queryFn: masterService.getPriorities,
   })
-
   const assigneeQuery = useQuery({
     queryKey: ['assignee'],
     queryFn: masterService.getResources,
   })
-
   const projectsQuery = useQuery({
     queryKey: ['select-project'],
     queryFn: masterService.getProjects,
@@ -114,8 +120,6 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
     form.formState.errors[fieldName] ? 'border-red-500' : 'border-gray-300'
 
   const handleSubmit = (values) => {
-    console.log(values)
-
     const assignee_id = assigneeQuery.data?.find((a) => a.id === values.assignee_id)
     const project_id = projectsQuery.data?.find((a) => a.id === values.project_id)
     const priority_id = priorityQuery.data?.find((a) => a.id === values.priority_id)
@@ -165,8 +169,10 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
         }
       : undefined
 
-    console.log(submitValues)
     onSubmit(submitValues)
+  }
+  const handleDelete = () => {
+    onDelete()
   }
 
   React.useEffect(() => {
@@ -338,9 +344,20 @@ export default function TaskOverlay({ task = {}, open, onOpenChange, onSubmit, i
             </div>
 
             <DialogFooter>
-              <Button className={'w-full'} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Saving...' : 'Save Task'}
-              </Button>
+              <div className="flex flex-col w-full gap-2 mt-4">
+                <Button className={'w-full'} type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Saving...' : 'Save Task'}
+                </Button>
+                <Button
+                  className={'w-full'}
+                  type="button"
+                  variant={'destructive'}
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete Task'}
+                </Button>
+              </div>
             </DialogFooter>
           </form>
         </Form>

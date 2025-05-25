@@ -41,7 +41,7 @@ const tasksService = {
     return data
   },
   async update({ id_task, payload }) {
-    const response = await apiClient.post(TASKS_API.UPDATE, payload, { params: id_task })
+    const response = await apiClient.post(TASKS_API.UPDATE, payload, { params: { id_task } })
 
     const { error, message, data } = response.data
 
@@ -50,7 +50,7 @@ const tasksService = {
     return data
   },
   async delete({ id_task }) {
-    const response = await apiClient.delete(TASKS_API.DELETE, { params: id_task })
+    const response = await apiClient.delete(TASKS_API.DELETE, { params: { id_task } })
 
     const { error, message, data } = response.data
 
