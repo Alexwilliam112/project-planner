@@ -35,28 +35,8 @@ export function Board() {
   })
   const statusQuery = useQuery({
     queryKey: ['status'],
-    queryFn: masterService.getStatuses,
+    queryFn: () => masterService.getStatuses({ params: { type: 'PROJECT' } }),
   })
-
-  const [indexStatus, setIndexStatus] = useState([
-    {
-      _id: '6815dbfa2398e8a9b9124993',
-      color: '#000000',
-      created_at: 1746263034046,
-      created_by: 178566,
-      id_record: 'lNRkDKdPXq53iV94',
-      name: 'BACKLOG',
-      next_status_id: {
-        id: 'bqPvMmVMSumQZ1mL',
-        name: 'IN PROGRESS',
-      },
-      order: 1,
-      status_type: 'BACKLOG',
-      updated_at: 1746368728923,
-      updated_by: 178566,
-      workspace_id: 'SxKfPgXcDS5bICvE',
-    },
-  ])
 
   const renderStatusIcon = (statusType) => {
     switch (statusType) {

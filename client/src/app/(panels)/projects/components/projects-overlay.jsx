@@ -111,8 +111,8 @@ export default function ProjectsOverlay({ data }) {
     queryFn: masterService.getPriorities,
   })
   const statusQuery = useQuery({
-    queryKey: ['status'],
-    queryFn: masterService.getStatuses,
+    queryKey: ['project-status'],
+    queryFn: () => masterService.getStatuses({ params: { type: 'PROJECT' } }),
   })
 
   // Form
@@ -178,7 +178,15 @@ export default function ProjectsOverlay({ data }) {
     }
   }
 
-  const onSubmitPic = async (values) => {}
+  const onSubmitPic = async (values) => {
+    const payload = []
+
+    payload.push({ pic_name: values.sa, role_name: 'Solution Architect' })
+    payload.push({ pic_name: values.se, role_name: 'Solution Engineer' })
+    payload.push({ pic_name: values.pm, role_name: 'Project Manager' })
+    payload.push({ pic_name: values.eu, role_name: 'End User' })
+    payload.push({ pic_name: values.ba, role_name: 'Business Analyst' })
+  }
 
   const onDelete = async () => {
     await deleteMutation.mutateAsync(data.id_project)
@@ -254,13 +262,15 @@ export default function ProjectsOverlay({ data }) {
                   optionLabel="name"
                   optionValue="id"
                 />
-                <SelectField
-                  name={'status_id'}
-                  label={'Status'}
-                  options={statusQuery.data}
-                  optionLabel="name"
-                  optionValue="id"
-                />
+                {data && (
+                  <SelectField
+                    name={'status_id'}
+                    label={'Status'}
+                    options={statusQuery.data}
+                    optionLabel="name"
+                    optionValue="id"
+                  />
+                )}
                 <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
                 <CalendarField name={'date_start'} label={'Start Date'} />
                 <CalendarField name={'date_end'} label={'End Date'} />
@@ -287,43 +297,45 @@ export default function ProjectsOverlay({ data }) {
               </form>
             </Form>
           </TabsContent>
-          <TabsContent value="pic" className="h-full">
-            <Form {...picForm}>
-              <form
-                onSubmit={picForm.handleSubmit(onSubmitPic)}
-                className="flex flex-col justify-between h-full"
-              >
-                <div className="flex flex-col gap-3">
-                  <InputField name={'sa'} label={'Solution Architect'} />
-                  <InputField name={'se'} label={'Solution Engineer'} />
-                  <InputField name={'pm'} label={'Project Manager'} />
-                  <InputField name={'eu'} label={'End User'} />
-                  <InputField name={'ba'} label={'Business Analyst'} />
-                </div>
+          {data && (
+            <TabsContent value="pic" className="h-full">
+              <Form {...picForm}>
+                <form
+                  onSubmit={picForm.handleSubmit(onSubmitPic)}
+                  className="flex flex-col justify-between h-full"
+                >
+                  <div className="flex flex-col gap-3">
+                    <InputField name={'sa'} label={'Solution Architect'} />
+                    <InputField name={'se'} label={'Solution Engineer'} />
+                    <InputField name={'pm'} label={'Project Manager'} />
+                    <InputField name={'eu'} label={'End User'} />
+                    <InputField name={'ba'} label={'Business Analyst'} />
+                  </div>
 
-                <div className="flex flex-col gap-2">
-                  <Button type="submit" className={'w-full'} disabled={disableAction}>
-                    {createMutation.isPending ||
-                    updateMutation.isPending ||
-                    updatePicMutation.isPending
-                      ? 'Saving...'
-                      : 'Save'}
-                  </Button>
-                  {data && (
-                    <Button
-                      type="button"
-                      className={'w-full'}
-                      variant={'destructive'}
-                      onClick={onDelete}
-                      disabled={disableAction}
-                    >
-                      {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                  <div className="flex flex-col gap-2">
+                    <Button type="submit" className={'w-full'} disabled={disableAction}>
+                      {createMutation.isPending ||
+                      updateMutation.isPending ||
+                      updatePicMutation.isPending
+                        ? 'Saving...'
+                        : 'Save'}
                     </Button>
-                  )}
-                </div>
-              </form>
-            </Form>
-          </TabsContent>
+                    {data && (
+                      <Button
+                        type="button"
+                        className={'w-full'}
+                        variant={'destructive'}
+                        onClick={onDelete}
+                        disabled={disableAction}
+                      >
+                        {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    )}
+                  </div>
+                </form>
+              </Form>
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>
