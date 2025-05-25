@@ -22,14 +22,18 @@ import { masterService, tasksService } from '@/services/index.mjs'
 
 export default function TaskSummaryPage() {
   // Query Params
+  const date = new Date()
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0)
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1)
+
   const [search, setSearch] = React.useState('')
   const [division_id, setDivisionId] = React.useState('')
   const [assignee_id, setAssigneeId] = React.useState('')
   const [priority_id, setPriorityId] = React.useState('')
   const [status_id, setStatusId] = React.useState('')
   const [squad_id, setSquadId] = React.useState('')
-  const [date_start, setDateStart] = React.useState(null)
-  const [date_end, setDateEnd] = React.useState(null)
+  const [date_start, setDateStart] = React.useState(firstDay)
+  const [date_end, setDateEnd] = React.useState(lastDay)
 
   const taskSummaryQuery = useQuery({
     queryKey: [
@@ -136,7 +140,8 @@ export default function TaskSummaryPage() {
     queryFn: masterService.getProjectOwner,
   })
 
-  // const sumCurrentMh = resourceCapacityQuery.data?.reduce()
+  const sumCurrentMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.current_mh, 0)
+  const sumTotalMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.total_mh, 0)
 
   return (
     <main className="space-y-4">
@@ -210,7 +215,9 @@ export default function TaskSummaryPage() {
 
         <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
           <p className="text-lg text-muted-foreground">Total Capacity</p>
-          <p className="text-2xl font-semibold">Test</p>
+          <p className="text-2xl font-semibold">
+            {sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0}
+          </p>
         </div>
       </div>
 
