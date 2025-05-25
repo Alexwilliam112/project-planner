@@ -20,3 +20,5 @@ export function getContrastColor(hexColor) {
   // Return black for light backgrounds, white for dark backgrounds
   return brightness > 128 ? '#000000' : '#FFFFFF'
 }
+
+export const utc7Offset = 7 * 60 * 60 * 1000

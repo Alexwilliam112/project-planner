@@ -58,6 +58,15 @@ const masterService = {
 
     return data
   },
+  async getResources() {
+    const response = await apiClient.get(MASTER_API.GET_RESOURCE)
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
 }
 
 export { masterService }

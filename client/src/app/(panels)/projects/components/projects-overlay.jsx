@@ -23,6 +23,7 @@ import { masterService } from '@/services/index.mjs'
 import { Pencil } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TabsContent } from '@radix-ui/react-tabs'
+import { utc7Offset } from '@/lib/utils'
 
 const generalInfoSchema = z.object({
   zoho_url: z.string(),
@@ -144,8 +145,8 @@ export default function ProjectsOverlay({ data }) {
     const category_id = categoryQuery.data.find((i) => i.id === values.category_id)
     const priority_id = priorityQuery.data.find((i) => i.id === values.priority_id)
     const status_id = statusQuery.data.find((i) => i.id === values.status_id)
-    const date_start = new Date(values.date_start).getTime()
-    const date_end = new Date(values.date_end).getTime()
+    const date_start = new Date(values.date_start).getTime() + utc7Offset
+    const date_end = new Date(values.date_end).getTime() + utc7Offset
 
     if (data) {
       await updateMutation.mutateAsync({

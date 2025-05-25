@@ -1,14 +1,14 @@
 'use client'
 
 import React from 'react'
-import { getContrastColor } from '@/lib/utils'
+import { cn, getContrastColor } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
-export default function TaskCard({ task }) {
+export default function TaskCard({ task, className, ...props }) {
   return (
-    <Card key={task.id_task} className="p-3 gap-2 hover:bg-gray-50">
+    <Card key={task.id_task} className={cn('p-3 gap-2 hover:bg-gray-50', className)} {...props}>
       <div className="mb-0 text-sm font-medium w-full p-0 pb-2" style={{ wordBreak: 'break-word' }}>
         {task.name}
       </div>
