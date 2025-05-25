@@ -1,0 +1,50 @@
+{
+    "_id": "6831e67f2398e8a9b9b50c75",
+    "assignee_id": {
+        "id": "daw9hGsRhhYA4JWc",
+        "name": "Alex"
+    },
+    "created_at": 1748100735427,
+    "created_by": 0,
+    "date_end": 432543,
+    "date_start": 12345,
+    "deadline": 2143123,
+    "dependencies": [],
+    "division_id": {
+        "id": "MWzuDu8y5i2Rnw2v",
+        "name": "Officeless Enablement"
+    },
+    "est_mh": 2,
+    "id_task": "W7YhGJyd6gvw0Q7W",
+    "milestone_id": {
+        "id": "Fp74tNjfj9pvGmUs",
+        "name": "Kick Off"
+    },
+    "name": "lorem iopsum sit dolor amet",
+    "note": "",
+    "priority_id": {
+        "color": "#12AA21",
+        "id": "AeCItiE6SY0Js5Qs",
+        "name": "LOW"
+    },
+    "project_id": {
+        "id": "daw9LV0qVksk4tK",
+        "name": "string"
+    },
+    "squad_id": {
+        "id": "KstrOSVuEJWD5y2V",
+        "name": "Alex"
+    },
+    "status_id": {
+        "color": "#525252",
+        "id": "oP8eQqS9AWy4l1K",
+        "name": "BACKLOG"
+    },
+    "styles": {
+        "backgroundColor": "#B8DBFB",
+        "progressColor": "#82BCF2"
+    },
+    "type": "task",
+    "updated_at": 1748100735427,
+    "updated_by": 0
+}
