@@ -13,6 +13,24 @@ const tasksService = {
 
     return data
   },
+  async getResourceCapacity({ params }) {
+    const response = await apiClient.get(TASKS_API.GET_RESOURCE_CAPACITY, { params })
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
+  async getWorkDays({ params }) {
+    const response = await apiClient.get(TASKS_API.GET_WORK_DAYS, { params })
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
   async create({ payload }) {
     const response = await apiClient.post(TASKS_API.CREATE, payload)
 

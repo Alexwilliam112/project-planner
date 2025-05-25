@@ -1,5 +1,11 @@
 'use client'
 
+import ResourceCapacityTable from './_components/resource-capacity-table'
+
 export default function TaskSummaryPage() {
-  return <div>TaskSummaryPage</div>
+  return (
+    <div>
+      <ResourceCapacityTable />
+    </div>
+  )
 }
