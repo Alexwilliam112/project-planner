@@ -87,6 +87,34 @@ export default function TaskSummaryPage() {
         },
       }),
   })
+  const wordaysQuery = useQuery({
+    queryKey: [
+      'workdays',
+      {
+        search,
+        division_id,
+        assignee_id,
+        priority_id,
+        status_id,
+        squad_id,
+        date_start,
+        date_end,
+      },
+    ],
+    queryFn: () =>
+      tasksService.getWorkDays({
+        params: {
+          search,
+          division_id,
+          assignee_id,
+          priority_id,
+          status_id,
+          squad_id,
+          date_start: new Date(date_start).getTime() + utc7Offset,
+          date_end: new Date(date_end).getTime() + utc7Offset,
+        },
+      }),
+  })
   const statusQuery = useQuery({
     queryKey: ['task-status'],
     queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
@@ -107,6 +135,8 @@ export default function TaskSummaryPage() {
     queryKey: ['squad'],
     queryFn: masterService.getProjectOwner,
   })
+
+  // const sumCurrentMh = resourceCapacityQuery.data?.reduce()
 
   return (
     <main className="space-y-4">
@@ -155,6 +185,33 @@ export default function TaskSummaryPage() {
         />
 
         <DatePickerFilter date={date_end} setDate={setDateEnd} placeholder="Filter by date end" />
+      </div>
+
+      <div className="flex gap-2">
+        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
+          <p className="text-lg text-muted-foreground">Holidays</p>
+          <p className="text-2xl font-semibold">{wordaysQuery?.data?.holidays}</p>
+        </div>
+
+        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
+          <p className="text-lg text-muted-foreground">Max MH</p>
+          <p className="text-2xl font-semibold">{wordaysQuery?.data?.holidays}</p>
+        </div>
+
+        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
+          <p className="text-lg text-muted-foreground">Nett Workdays</p>
+          <p className="text-2xl font-semibold">{wordaysQuery?.data?.nett_work_days}</p>
+        </div>
+
+        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
+          <p className="text-lg text-muted-foreground">Weekend</p>
+          <p className="text-2xl font-semibold">{wordaysQuery?.data?.weekend}</p>
+        </div>
+
+        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
+          <p className="text-lg text-muted-foreground">Total Capacity</p>
+          <p className="text-2xl font-semibold">Test</p>
+        </div>
       </div>
 
       <ResourceCapacityTable resourceCapacityQuery={resourceCapacityQuery} />
