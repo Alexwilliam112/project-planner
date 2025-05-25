@@ -41,11 +41,7 @@ const generalInfoSchema = z.object({
 })
 
 const picSchema = z.object({
-  sa: z.string(),
-  se: z.string(),
-  pm: z.string(),
-  eu: z.string(),
-  ba: z.string(),
+  pic: z.object({ pic_name: z.string(), role_name: z.string() }).array(),
 })
 
 export default function ProjectsOverlay({ data }) {
@@ -136,6 +132,9 @@ export default function ProjectsOverlay({ data }) {
 
   const picForm = useForm({
     resolver: zodResolver(picSchema),
+    defaultValues: {
+      pic: data?.pic,
+    },
   })
 
   const onSubmitGeneral = async (values) => {
@@ -179,13 +178,7 @@ export default function ProjectsOverlay({ data }) {
   }
 
   const onSubmitPic = async (values) => {
-    const payload = []
-
-    payload.push({ pic_name: values.sa, role_name: 'Solution Architect' })
-    payload.push({ pic_name: values.se, role_name: 'Solution Engineer' })
-    payload.push({ pic_name: values.pm, role_name: 'Project Manager' })
-    payload.push({ pic_name: values.eu, role_name: 'End User' })
-    payload.push({ pic_name: values.ba, role_name: 'Business Analyst' })
+    await updatePicMutation.mutateAsync({ id_project: data.id_project, payload: values })
   }
 
   const onDelete = async () => {
@@ -305,11 +298,9 @@ export default function ProjectsOverlay({ data }) {
                   className="flex flex-col justify-between h-full"
                 >
                   <div className="flex flex-col gap-3">
-                    <InputField name={'sa'} label={'Solution Architect'} />
-                    <InputField name={'se'} label={'Solution Engineer'} />
-                    <InputField name={'pm'} label={'Project Manager'} />
-                    <InputField name={'eu'} label={'End User'} />
-                    <InputField name={'ba'} label={'Business Analyst'} />
+                    {data.pic.map((p, i) => (
+                      <InputField key={i} name={`pic.${i}.pic_name`} label={p.role_name} />
+                    ))}
                   </div>
 
                   <div className="flex flex-col gap-2">
