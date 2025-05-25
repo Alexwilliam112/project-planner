@@ -21,8 +21,10 @@ import { Button } from '@/components/ui/button'
 import CalendarField from '@/components/fields/calendar-field'
 import { masterService } from '@/services/index.mjs'
 import { Pencil } from 'lucide-react'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { TabsContent } from '@radix-ui/react-tabs'
 
-const createProjectSchema = z.object({
+const generalInfoSchema = z.object({
   zoho_url: z.string(),
   project_owner_id: z.string(),
   product_id: z.string(),
@@ -36,6 +38,14 @@ const createProjectSchema = z.object({
   company: z.string(),
   est_mh: z.coerce.number(),
   division_id: z.string(),
+})
+
+const picSchema = z.object({
+  sa: z.string(),
+  se: z.string(),
+  pm: z.string(),
+  eu: z.string(),
+  ba: z.string(),
 })
 
 export default function ProjectsOverlay({ data }) {
@@ -56,6 +66,14 @@ export default function ProjectsOverlay({ data }) {
   const updateMutation = useMutation({
     mutationKey: ['update-project'],
     mutationFn: projectsService.update,
+    onSuccess: () => {
+      setOpen(false)
+      queryClient.refetchQueries(['projects'])
+    },
+  })
+  const updatePicMutation = useMutation({
+    mutationKey: ['update-project'],
+    mutationFn: projectsService.updatePIC,
     onSuccess: () => {
       setOpen(false)
       queryClient.refetchQueries(['projects'])
@@ -99,25 +117,28 @@ export default function ProjectsOverlay({ data }) {
 
   // Form
 
-  const defaultValues = data
-    ? {
-        ...data,
-        project_owner_id: data.project_owner_id.id,
-        product_id: data.product_id.id,
-        division_id: data.division_id.id,
-        category_id: data.category_id.id,
-        priority_id: data.priority_id.id,
-        status_id: data.status_id.id,
-        date_start: new Date(data.date_start),
-        date_end: new Date(data.date_end),
-      }
-    : undefined
-  const form = useForm({
-    resolver: zodResolver(createProjectSchema),
-    defaultValues,
+  const generalInfoForm = useForm({
+    resolver: zodResolver(generalInfoSchema),
+    defaultValues: data
+      ? {
+          ...data,
+          project_owner_id: data.project_owner_id.id,
+          product_id: data.product_id.id,
+          division_id: data.division_id.id,
+          category_id: data.category_id.id,
+          priority_id: data.priority_id.id,
+          status_id: data.status_id.id,
+          date_start: new Date(data.date_start),
+          date_end: new Date(data.date_end),
+        }
+      : undefined,
   })
 
-  const onSubmit = async (values) => {
+  const picForm = useForm({
+    resolver: zodResolver(picSchema),
+  })
+
+  const onSubmitGeneral = async (values) => {
     const project_owner_id = projectOwnerQuery.data.find((i) => i.id === values.project_owner_id)
     const product_id = productQuery.data.find((i) => i.id === values.product_id)
     const division_id = divisionQuery.data.find((i) => i.id === values.division_id)
@@ -157,9 +178,17 @@ export default function ProjectsOverlay({ data }) {
     }
   }
 
+  const onSubmitPic = async (values) => {}
+
   const onDelete = async () => {
     await deleteMutation.mutateAsync(data.id_project)
   }
+
+  const disableAction =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    updatePicMutation.isPending ||
+    deleteMutation.isPending
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -176,87 +205,126 @@ export default function ProjectsOverlay({ data }) {
         <DialogHeader>
           <DialogTitle>{data ? 'Update Project' : 'Create New Project'}</DialogTitle>
         </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[85vh] overflow-auto pb-8 px-1"
-          >
-            <InputField name={'name'} label={'Project Name'} />
-            <InputField name={'company'} label={'Company'} />
-            <InputField name={'zoho_url'} label={'Zoho URL'} />
-            <SelectField
-              name={'project_owner_id'}
-              label={'Project Owner'}
-              options={projectOwnerQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <SelectField
-              name={'product_id'}
-              label={'Project Type'}
-              options={productQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <SelectField
-              name={'division_id'}
-              label={'Division'}
-              options={divisionQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <SelectField
-              name={'category_id'}
-              label={'Category'}
-              options={categoryQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <SelectField
-              name={'priority_id'}
-              label={'Priority'}
-              options={priorityQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <SelectField
-              name={'status_id'}
-              label={'Status'}
-              options={statusQuery.data}
-              optionLabel="name"
-              optionValue="id"
-            />
-            <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
-            <CalendarField name={'date_start'} label={'Start Date'} />
-            <CalendarField name={'date_end'} label={'End Date'} />
-            <div className="col-span-1 md:col-span-2">
-              <TextareaField name={'note'} label={'Note'} />
-            </div>
-
-            <div className="space-y-2 mt-4 col-span-1 md:col-span-2">
-              <Button
-                type="submit"
-                className={'w-full'}
-                disabled={
-                  createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
-                }
+        <Tabs className="h-[85vh] overflow-auto pb-8 px-1" defaultValue="general">
+          <TabsList className="w-full" hidden={!data}>
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="pic">PIC</TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <Form {...generalInfoForm}>
+              <form
+                onSubmit={generalInfoForm.handleSubmit(onSubmitGeneral)}
+                className="grid grid-cols-1 md:grid-cols-2 gap-3"
               >
-                {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
-              </Button>
-              {data && (
-                <Button
-                  type="button"
-                  className={'w-full'}
-                  variant={'destructive'}
-                  onClick={onDelete}
-                  disabled={updateMutation.isPending || deleteMutation.isPending}
-                >
-                  {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-                </Button>
-              )}
-            </div>
-          </form>
-        </Form>
+                <InputField name={'name'} label={'Project Name'} />
+                <InputField name={'company'} label={'Company'} />
+                <InputField name={'zoho_url'} label={'Zoho URL'} />
+                <SelectField
+                  name={'project_owner_id'}
+                  label={'Project Owner'}
+                  options={projectOwnerQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <SelectField
+                  name={'product_id'}
+                  label={'Project Type'}
+                  options={productQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <SelectField
+                  name={'division_id'}
+                  label={'Division'}
+                  options={divisionQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <SelectField
+                  name={'category_id'}
+                  label={'Category'}
+                  options={categoryQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <SelectField
+                  name={'priority_id'}
+                  label={'Priority'}
+                  options={priorityQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <SelectField
+                  name={'status_id'}
+                  label={'Status'}
+                  options={statusQuery.data}
+                  optionLabel="name"
+                  optionValue="id"
+                />
+                <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
+                <CalendarField name={'date_start'} label={'Start Date'} />
+                <CalendarField name={'date_end'} label={'End Date'} />
+                <div className="col-span-1 md:col-span-2">
+                  <TextareaField name={'note'} label={'Note'} />
+                </div>
+
+                <div className="space-y-2 mt-4 col-span-1 md:col-span-2">
+                  <Button type="submit" className={'w-full'} disabled={disableAction}>
+                    {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
+                  </Button>
+                  {data && (
+                    <Button
+                      type="button"
+                      className={'w-full'}
+                      variant={'destructive'}
+                      onClick={onDelete}
+                      disabled={disableAction}
+                    >
+                      {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </TabsContent>
+          <TabsContent value="pic" className="h-full">
+            <Form {...picForm}>
+              <form
+                onSubmit={picForm.handleSubmit(onSubmitPic)}
+                className="flex flex-col justify-between h-full"
+              >
+                <div className="flex flex-col gap-3">
+                  <InputField name={'sa'} label={'Solution Architect'} />
+                  <InputField name={'se'} label={'Solution Engineer'} />
+                  <InputField name={'pm'} label={'Project Manager'} />
+                  <InputField name={'eu'} label={'End User'} />
+                  <InputField name={'ba'} label={'Business Analyst'} />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Button type="submit" className={'w-full'} disabled={disableAction}>
+                    {createMutation.isPending ||
+                    updateMutation.isPending ||
+                    updatePicMutation.isPending
+                      ? 'Saving...'
+                      : 'Save'}
+                  </Button>
+                  {data && (
+                    <Button
+                      type="button"
+                      className={'w-full'}
+                      variant={'destructive'}
+                      onClick={onDelete}
+                      disabled={disableAction}
+                    >
+                      {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </Form>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   )
