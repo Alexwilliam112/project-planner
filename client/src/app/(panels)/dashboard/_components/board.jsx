@@ -2,18 +2,11 @@
 
 import React from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { masterService, tasksService } from '@/services/index.mjs'
 import TaskCard from './task-card'
-import TaskOverlay from './task-overlay'
 
 export function Board() {
-  const queryClient = useQueryClient()
-  const [open, setOpen] = React.useState(false)
-  const [selectedTask, setSelectedTask] = React.useState(null)
-  const [selectedMilestone, setSelectedMilestone] = React.useState(null)
-
   // Fetch data
   const { data: tasks, isLoading: tasksLoading } = useQuery({
     queryKey: ['tasks'],
@@ -24,46 +17,6 @@ export function Board() {
     queryKey: ['task-status'],
     queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
   })
-
-  // Mutations
-  const createMutation = useMutation({
-    mutationFn: tasksService.create,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tasks'])
-      setOpen(false)
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: tasksService.update,
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tasks'])
-      setOpen(false)
-    },
-  })
-
-  // Handlers
-  const handleCreateTask = (milestone) => {
-    setSelectedMilestone(milestone)
-    setSelectedTask(null)
-    setOpen(true)
-  }
-
-  const handleEditTask = (task) => {
-    setSelectedTask(task)
-    setSelectedMilestone(task.milestone_id)
-    setOpen(true)
-  }
-
-  const handleSubmit = (formData) => {
-    if (selectedTask) {
-      updateMutation.mutate({ id_task: formData.id_task, payload: formData })
-    } else {
-      createMutation.mutate({
-        payload: formData,
-      })
-    }
-  }
 
   // Loading state
   if (tasksLoading || statusesLoading) {
@@ -94,14 +47,6 @@ export function Board() {
                 {tasks?.filter((task) => task.status_id.id === status.id).length}
               </Badge>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-white/80 hover:text-white hover:bg-white/20"
-              onClick={() => handleCreateTask(status)}
-            >
-              + Add
-            </Button>
           </div>
 
           {/* Column Content */}
@@ -109,20 +54,11 @@ export function Board() {
             {tasks
               ?.filter((task) => task.status_id.id === status.id)
               .map((task) => (
-                <TaskCard key={task._id} task={task} onClick={() => handleEditTask(task)} />
+                <TaskCard key={task._id} task={task} />
               ))}
           </div>
         </div>
       ))}
-
-      <TaskOverlay
-        open={open}
-        onOpenChange={setOpen}
-        task={selectedTask}
-        milestone={selectedMilestone}
-        onSubmit={handleSubmit}
-        isSubmitting={createMutation.isLoading || updateMutation.isLoading}
-      />
     </div>
   )
 }
