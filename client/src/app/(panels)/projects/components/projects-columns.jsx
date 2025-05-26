@@ -25,14 +25,22 @@ export const projectsColumns = [
   {
     accessorKey: "product_id.name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Project Type" />
+      <DataTableColumnHeader column={column} title="Product" />
     ),
     cell: ({ row }) => (
       <div className="w-[20ch] py-2 text-wrap">
-        {row.original.product_id.name}
+        <Badge
+          style={{
+            backgroundColor: row.original.product_id.color,
+            color: "#fff",
+          }}
+        >
+          {row.original.product_id.name}
+        </Badge>
       </div>
     ),
   },
+
   {
     accessorKey: "category_id.name",
     header: ({ column }) => (
@@ -91,6 +99,24 @@ export const projectsColumns = [
           }}
         >
           {row.original.status_id.name}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "priority_id.name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Priority" />
+    ),
+    cell: ({ row }) => (
+      <div className="w-[20ch] py-2 text-wrap">
+        <Badge
+          style={{
+            backgroundColor: row.original.priority_id.color,
+            color: "#fff",
+          }}
+        >
+          {row.original.priority_id.name}
         </Badge>
       </div>
     ),
