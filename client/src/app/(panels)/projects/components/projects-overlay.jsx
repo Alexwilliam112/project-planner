@@ -176,6 +176,8 @@ export default function ProjectsOverlay({ data }) {
         date_end,
       })
     }
+
+    generalInfoForm.reset()
   }
 
   const onSubmitPic = async (values) => {
@@ -234,7 +236,7 @@ export default function ProjectsOverlay({ data }) {
                 />
                 <SelectField
                   name={'product_id'}
-                  label={'Project Type'}
+                  label={'Product'}
                   options={productQuery.data}
                   optionLabel="name"
                   optionValue="id"

@@ -171,6 +171,7 @@ export default function TaskOverlay({
       : undefined
 
     onSubmit(submitValues)
+    form.reset()
   }
   const handleDelete = () => {
     onDelete()
