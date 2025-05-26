@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Gantt, Task, ViewMode } from 'gantt-task-react'
+import { Gantt, ViewMode } from 'gantt-task-react'
 import { useState } from 'react'
 import { getStartEndDateForProject } from '@/utils/helpers.js'
 import { ViewSwitcher } from './view-switcher.jsx'
@@ -226,7 +226,8 @@ export default function GanttChart() {
       const newTasks = ganttQuery.data?.map((data) => ({
         id: data.id,
         name: data.name,
-        type: data.type,
+        type: data.block_type,
+        block_type: data.block_type,
         category: data.category_id?.name || '',
         type_of_custom: data.product_id?.name || '',
         type_of_project: data.product_id?.name || '',
@@ -236,6 +237,8 @@ export default function GanttChart() {
         progress: data.progress,
         hideChildren: false,
         styles: data.styles,
+        dependencies: data.dependencies,
+        project: data.project_id?.name || '',
       }))
 
       setTasks(newTasks)
