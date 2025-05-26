@@ -7,6 +7,7 @@ const MASTER_API = {
   GET_STATUS: '/ops-center/status-select/v1/index',
   GET_RESOURCE: '/ops-center/resource-select/v1/index',
   GET_PROJECTS: '/ops-center/project-select/v1/index',
+  GET_MILESTONE: '/ops-center/milestone-select/v1/index',
 }
 
 export { MASTER_API }

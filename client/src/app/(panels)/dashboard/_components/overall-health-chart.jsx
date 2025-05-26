@@ -4,7 +4,9 @@ import PieChartWithNeedle from '@/components/charts/pie-chart-with-needle'
 import { useQuery } from '@tanstack/react-query'
 
 export default function OverallHealthChart() {
-  const overallHealthQuery = useQuery({})
+  const overallHealthQuery = useQuery({
+    queryKey: ['overall-health'],
+  })
   return (
     <div className="border rounded-md shadow">
       <div className="border-b px-5 py-3">

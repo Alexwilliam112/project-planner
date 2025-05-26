@@ -50,31 +50,6 @@ export default function TaskOverlay({
   isSubmitting,
   isDeleting,
 }) {
-  const priorityQuery = useQuery({
-    queryKey: ['priority'],
-    queryFn: masterService.getPriorities,
-  })
-  const assigneeQuery = useQuery({
-    queryKey: ['assignee'],
-    queryFn: masterService.getResources,
-  })
-  const projectsQuery = useQuery({
-    queryKey: ['select-project'],
-    queryFn: masterService.getProjects,
-  })
-  const mileStoneQuery = useQuery({
-    queryKey: ['milestones'],
-    queryFn: () => masterService.getStatuses({ params: { type: 'MILESTONE' } }),
-  })
-  const taskStatusQuery = useQuery({
-    queryKey: ['task-status'],
-    queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
-  })
-  const prouductQuery = useQuery({
-    queryKey: ['products'],
-    queryFn: masterService.getProducts,
-  })
-
   const form = useForm({
     resolver: zodResolver(
       taskSchema.superRefine((data, ctx) => {
@@ -114,6 +89,32 @@ export default function TaskOverlay({
       priority_id: task?.priority_id?.id || '',
       assignee_id: task?.assignee_id?.id || '',
     },
+  })
+
+  const projectId = form.watch('project_id')
+  const priorityQuery = useQuery({
+    queryKey: ['priority'],
+    queryFn: masterService.getPriorities,
+  })
+  const assigneeQuery = useQuery({
+    queryKey: ['assignee'],
+    queryFn: masterService.getResources,
+  })
+  const projectsQuery = useQuery({
+    queryKey: ['select-project'],
+    queryFn: masterService.getProjects,
+  })
+  const mileStoneQuery = useQuery({
+    queryKey: ['milestones', { project_id: projectId }],
+    queryFn: () => masterService.getMilestone({ params: { id_project: projectId } }),
+  })
+  const taskStatusQuery = useQuery({
+    queryKey: ['task-status'],
+    queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
+  })
+  const prouductQuery = useQuery({
+    queryKey: ['products'],
+    queryFn: masterService.getProducts,
   })
 
   const getBorderColor = (fieldName) =>
@@ -195,10 +196,10 @@ export default function TaskOverlay({
     })
   }, [task])
 
-  const { errors } = form.formState
-  React.useEffect(() => {
-    console.log(errors)
-  }, [errors])
+  // const { errors } = form.formState
+  // React.useEffect(() => {
+  //   console.log(errors)
+  // }, [errors])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -262,6 +263,7 @@ export default function TaskOverlay({
                 name={'milestone_id'}
                 optionLabel="name"
                 optionValue="id"
+                disabled={!form.watch('project_id')}
                 options={mileStoneQuery.data || []}
               />
 

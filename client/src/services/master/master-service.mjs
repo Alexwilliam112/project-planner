@@ -49,8 +49,18 @@ const masterService = {
 
     return data
   },
-  async getStatuses({ params } = { params }) {
+  async getStatuses({ params }) {
     const response = await apiClient.get(MASTER_API.GET_STATUS, { params })
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
+  async getMilestone({ params }) {
+    console.log(params)
+    const response = await apiClient.get(MASTER_API.GET_MILESTONE, { params })
 
     const { error, message, data } = response.data
 

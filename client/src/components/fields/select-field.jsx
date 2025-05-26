@@ -25,6 +25,7 @@ export default function SelectField({
   options = [],
   optionValue = '',
   optionLabel = '',
+  disabled = false,
 }) {
   const form = useFormContext()
 
@@ -38,7 +39,7 @@ export default function SelectField({
           <FormControl>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <FormControl>
-                <SelectTrigger>
+                <SelectTrigger disabled={disabled}>
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>

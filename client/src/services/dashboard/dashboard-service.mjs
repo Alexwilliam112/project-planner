@@ -1,5 +1,6 @@
 'use client'
 
+import { apiClient } from '../api/api-client.mjs'
 import { DASHBOARD_API } from './dashboard-endpoints.mjs'
 
 const dashboardService = {
