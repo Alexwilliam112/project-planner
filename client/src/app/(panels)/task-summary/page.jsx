@@ -207,7 +207,7 @@ export default function TaskSummaryPage() {
         </Button>
       </div>
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
         <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
           <p className="text-lg text-muted-foreground">Holidays</p>
           <p className="text-2xl font-semibold">{wordaysQuery?.data?.holidays}</p>
@@ -231,7 +231,7 @@ export default function TaskSummaryPage() {
         <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
           <p className="text-lg text-muted-foreground">Total Capacity</p>
           <p className="text-2xl font-semibold">
-            {sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0}
+            {Number(sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0).toFixed(2)}
           </p>
         </div>
       </div>

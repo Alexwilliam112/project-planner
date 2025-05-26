@@ -44,15 +44,15 @@
 }
 
 :root {
+  --radius: 0.5rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
-  --radius: 0.625rem;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.606 0.25 292.717);
+  --primary-foreground: oklch(0.969 0.016 293.756);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
@@ -62,7 +62,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
+  --ring: oklch(0.606 0.25 292.717);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -70,12 +70,12 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.606 0.25 292.717);
+  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
   --sidebar-accent: oklch(0.967 0.001 286.375);
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  --sidebar-ring: oklch(0.606 0.25 292.717);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -90,31 +90,33 @@
 }
 
 .gantt-container .calendar .calendar-row:first-child .calendar-cell {
-  border-right: 2px solid #888; /* Make month separator bolder */
+  border-right: 2px solid #888;
+  /* Make month separator bolder */
 }
 
-.rows > rect {
+.rows>rect {
   fill: #ffffff;
 }
 
-.rows > rect:hover {
+.rows>rect:hover {
   fill: #f0f0f0;
 }
 
-.rows > rect:nth-child(even) {
+.rows>rect:nth-child(even) {
   fill: #ffffff;
 }
 
-.rows > rect:nth-child(even):hover {
+.rows>rect:nth-child(even):hover {
   fill: #f0f0f0;
 }
 
-.calendar > rect {
+.calendar>rect {
   fill: #f4f5f7;
 }
 
 .gantt-container .bar-project {
-  fill: #5c6bc0 !important; /* Indigo for project bars */
+  fill: #5c6bc0 !important;
+  /* Indigo for project bars */
   stroke: #3949ab !important;
 }
 
@@ -122,8 +124,7 @@
   font-weight: bold;
 }
 
-.gantt-container
-  .task-list-item[data-task-type="task"][data-has-children="true"] {
+.gantt-container .task-list-item[data-task-type="task"][data-has-children="true"] {
   font-weight: bold;
   background-color: #f8f9fa;
 }
@@ -166,6 +167,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
