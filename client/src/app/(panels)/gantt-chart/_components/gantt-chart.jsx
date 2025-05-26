@@ -234,7 +234,7 @@ export default function GanttChart() {
         start: data.start ? new Date(data.start) : new Date(),
         end: data.end ? new Date(data.end) : new Date(),
         progress: data.progress,
-        hideChildren: true,
+        hideChildren: false,
         styles: data.styles,
       }))
 

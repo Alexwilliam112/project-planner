@@ -31,7 +31,7 @@ const generalInfoSchema = z.object({
   product_id: z.string(),
   category_id: z.string(),
   priority_id: z.string(),
-  status_id: z.string(),
+  status_id: z.string().optional(),
   note: z.string(),
   date_start: z.date(),
   date_end: z.date(),
@@ -192,6 +192,10 @@ export default function ProjectsOverlay({ data }) {
     updatePicMutation.isPending ||
     deleteMutation.isPending
 
+  const { errors } = generalInfoForm.formState
+  React.useEffect(() => {
+    console.error(errors)
+  }, [errors])
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

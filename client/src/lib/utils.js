@@ -5,7 +5,7 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs))
 }
 
-export function getContrastColor(hexColor) {
+export function getContrastColor(hexColor = '') {
   // Remove the hash if it exists
   const color = hexColor.replace('#', '')
 
