@@ -1,9 +1,13 @@
 'use client'
+
+import React from 'react'
 import { Gantt, Task, ViewMode } from 'gantt-task-react'
 import { useState } from 'react'
 import { getStartEndDateForProject } from '@/utils/helpers.js'
 import { ViewSwitcher } from './view-switcher.jsx'
 import { CustomTaskListTable, CustomTaskListHeader } from './task-list-table.jsx'
+import { useQuery } from '@tanstack/react-query'
+import { ganttService } from '@/services/index.mjs'
 
 const ganttStyles = {
   rowHeight: 50,
@@ -22,6 +26,11 @@ const ganttStyles = {
 }
 
 export default function GanttChart() {
+  const ganttQuery = useQuery({
+    queryFn: ganttService.getAll,
+    queryKey: ['gantt'],
+  })
+
   const [view, setView] = useState(ViewMode.Week)
   const [tasks, setTasks] = useState([
     {
@@ -212,6 +221,27 @@ export default function GanttChart() {
     columnWidth = 250
   }
 
+  React.useEffect(() => {
+    if (ganttQuery.data) {
+      const newTasks = ganttQuery.data?.map((data) => ({
+        id: data.id,
+        name: data.name,
+        type: data.type,
+        category: data.category_id?.name || '',
+        type_of_custom: data.product_id?.name || '',
+        type_of_project: data.product_id?.name || '',
+        status: data.status_id?.name || '',
+        start: data.start ? new Date(data.start) : new Date(),
+        end: data.end ? new Date(data.end) : new Date(),
+        progress: data.progress,
+        hideChildren: true,
+        styles: data.styles,
+      }))
+
+      setTasks(newTasks)
+    }
+  }, [ganttQuery.data])
+
   const MyTooltip = ({ task, fontSize, fontFamily }) => (
     <div style={{ fontSize, fontFamily, padding: 8 }} className="bg-white">
       <div>
@@ -321,11 +351,7 @@ export default function GanttChart() {
         onExpanderClick={handleExpanderClick}
         TooltipContent={MyTooltip}
         TaskListTable={(props) => (
-          <CustomTaskListTable
-            {...props}
-            allTasks={tasks}
-            onExpanderClick={handleExpanderClick}
-          />
+          <CustomTaskListTable {...props} allTasks={tasks} onExpanderClick={handleExpanderClick} />
         )}
         {...ganttStyles}
       />
