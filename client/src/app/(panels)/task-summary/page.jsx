@@ -132,8 +132,8 @@ export default function TaskSummaryPage() {
     queryFn: masterService.getResources,
   })
   const priorityQuery = useQuery({
-    queryKey: ['assignee'],
-    queryFn: masterService.getResources,
+    queryKey: ['priority'],
+    queryFn: masterService.getPriorities,
   })
   const squadQuery = useQuery({
     queryKey: ['squad'],
