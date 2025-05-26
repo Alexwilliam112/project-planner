@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, RefreshCcw } from 'lucide-react'
 import { cn, utc7Offset } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -143,6 +143,17 @@ export default function TaskSummaryPage() {
   const sumCurrentMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.current_mh, 0)
   const sumTotalMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.total_mh, 0)
 
+  const handleReset = () => {
+    setSearch('')
+    setDivisionId('')
+    setAssigneeId('')
+    setPriorityId('')
+    setStatusId('')
+    setSquadId('')
+    setDateStart(firstDay)
+    setDateEnd(lastDay)
+  }
+
   return (
     <main className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -190,6 +201,10 @@ export default function TaskSummaryPage() {
         />
 
         <DatePickerFilter date={date_end} setDate={setDateEnd} placeholder="Filter by date end" />
+
+        <Button variant="secondary" className="w-full" onClick={handleReset}>
+          <RefreshCcw /> Reset filter
+        </Button>
       </div>
 
       <div className="flex gap-2">
