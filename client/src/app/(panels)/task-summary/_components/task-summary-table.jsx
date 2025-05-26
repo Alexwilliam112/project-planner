@@ -69,7 +69,7 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
   const columns = createTaskSummaryColumns({ handleEdit: handleEditTask })
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 mb-30">
       <Button size="sm" onClick={handleCreateTask}>
         Add
       </Button>
