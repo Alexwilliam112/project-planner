@@ -43,7 +43,7 @@ export default function SelectField({
                   <SelectValue placeholder={placeholder} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              <SelectContent className="max-h-60 overflow-auto">
                 {options.map((d) => (
                   <SelectItem key={d[optionValue]} value={d[optionValue]}>
                     {d[optionLabel]}

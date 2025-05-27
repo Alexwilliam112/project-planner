@@ -7,6 +7,7 @@ import { tasksService } from '@/services/index.mjs'
 import { createTaskSummaryColumns } from './task-summary-columns'
 import TaskOverlay from '../../dashboard/_components/task-overlay'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function TaskSummaryTable({ taskSummaryQuery }) {
   const queryClient = useQueryClient()
@@ -21,21 +22,33 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
     mutationFn: tasksService.create,
     onSuccess: () => {
       queryClient.invalidateQueries(['tasks'])
+      toast.success('Task created successfully')
       setOpen(false)
+    },
+    onError: (error) => {
+      toast.error(`Error creating task: ${error.message}`)
     },
   })
   const updateMutation = useMutation({
     mutationFn: tasksService.update,
     onSuccess: () => {
       queryClient.invalidateQueries(['tasks'])
+      toast.success('Task updated successfully')
       setOpen(false)
+    },
+    onError: (error) => {
+      toast.error(`Error updating task: ${error.message}`)
     },
   })
   const deleteMutation = useMutation({
     mutationFn: tasksService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries(['tasks'])
+      toast.success('Task deleted successfully')
       setOpen(false)
+    },
+    onError: (error) => {
+      toast.error(`Error deleting task: ${error.message}`)
     },
   })
 
@@ -80,7 +93,9 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
         open={open}
         onOpenChange={setOpen}
         task={selectedTask}
-        isSubmitting={createMutation.isLoading || updateMutation.isLoading}
+        isSubmitting={
+          createMutation.isLoading || updateMutation.isLoading || deleteMutation.isLoading
+        }
         isDeleting={deleteMutation.isLoading}
         onSubmit={handleSubmit}
         onDelete={handleDelete}

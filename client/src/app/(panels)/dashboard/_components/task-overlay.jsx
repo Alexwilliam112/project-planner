@@ -22,6 +22,7 @@ import { masterService } from '@/services/index.mjs'
 import CalendarField from '@/components/fields/calendar-field'
 import SelectField from '@/components/fields/select-field'
 import { utc7Offset } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const taskSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -197,10 +198,17 @@ export default function TaskOverlay({
     })
   }, [task])
 
-  // const { errors } = form.formState
-  // React.useEffect(() => {
-  //   console.log(errors)
-  // }, [errors])
+  const { errors } = form.formState
+  React.useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      console.error(errors)
+      toast.error('Please fix the errors in the form before submitting.', {
+        description: Object.values(errors)
+          .map((error) => error.message)
+          .join(', '),
+      })
+    }
+  }, [errors])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -356,7 +364,7 @@ export default function TaskOverlay({
                   type="button"
                   variant={'destructive'}
                   onClick={handleDelete}
-                  disabled={isDeleting}
+                  disabled={isSubmitting}
                 >
                   {isDeleting ? 'Deleting...' : 'Delete Task'}
                 </Button>

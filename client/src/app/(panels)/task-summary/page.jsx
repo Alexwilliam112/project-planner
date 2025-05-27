@@ -249,7 +249,7 @@ function SelectFilter({ value, onValueChange, options, placeholder }) {
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="max-h-60 overflow-auto">
         {options.map((o) => (
           <SelectItem key={o.id} value={o.id}>
             {o.name}
