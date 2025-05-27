@@ -11,6 +11,7 @@ import { SelectFilter } from '@/components/filter/select-filter'
 import { Button } from '@/components/ui/button'
 import { RefreshCcw } from 'lucide-react'
 import ProjectsOverlay from './projects-overlay'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ProjectsTable() {
   const [division_id, setDivisionId] = useState('')
@@ -133,7 +134,11 @@ export default function ProjectsTable() {
         <ProjectsOverlay />
       </div>
 
-      <DataTable columns={projectsColumns} data={projectsQuery.data || []} />
+      {projectsQuery.isPending ? (
+        <Skeleton className="w-full h-[80vh]" />
+      ) : (
+        <DataTable columns={projectsColumns} data={projectsQuery.data || []} />
+      )}
     </div>
   )
 }

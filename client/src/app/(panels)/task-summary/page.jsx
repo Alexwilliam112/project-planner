@@ -11,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { masterService, tasksService } from '@/services/index.mjs'
 import { SelectFilter } from '@/components/filter/select-filter'
 import { DatePickerFilter } from '@/components/filter/date-picker-filter'
+import { Skeleton } from '@/components/ui/skeleton'
+import TaskSummaryWidget from './_components/task-summary-widget'
 
 export default function TaskSummaryPage() {
   // Query Params
@@ -83,7 +85,7 @@ export default function TaskSummaryPage() {
         },
       }),
   })
-  const wordaysQuery = useQuery({
+  const workdaysQuery = useQuery({
     queryKey: [
       'workdays',
       {
@@ -134,6 +136,9 @@ export default function TaskSummaryPage() {
 
   const sumCurrentMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.current_mh, 0)
   const sumTotalMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.total_mh, 0)
+  const totalCapacity = Number(sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0).toFixed(
+    2
+  )
 
   const handleReset = () => {
     setSearch('')
@@ -199,38 +204,19 @@ export default function TaskSummaryPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
-        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-          <p className="text-lg text-muted-foreground">Holidays</p>
-          <p className="text-2xl font-semibold">{wordaysQuery?.data?.holidays}</p>
-        </div>
+      <TaskSummaryWidget workdaysQuery={workdaysQuery} totalCapacity={totalCapacity} />
 
-        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-          <p className="text-lg text-muted-foreground">Max MH</p>
-          <p className="text-2xl font-semibold">{wordaysQuery?.data?.holidays}</p>
-        </div>
+      {resourceCapacityQuery.isPending ? (
+        <Skeleton className="w-full h-[50vh]" />
+      ) : (
+        <ResourceCapacityTable resourceCapacityQuery={resourceCapacityQuery} />
+      )}
 
-        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-          <p className="text-lg text-muted-foreground">Nett Workdays</p>
-          <p className="text-2xl font-semibold">{wordaysQuery?.data?.nett_work_days}</p>
-        </div>
-
-        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-          <p className="text-lg text-muted-foreground">Weekend</p>
-          <p className="text-2xl font-semibold">{wordaysQuery?.data?.weekend}</p>
-        </div>
-
-        <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-          <p className="text-lg text-muted-foreground">Total Capacity</p>
-          <p className="text-2xl font-semibold">
-            {Number(sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0).toFixed(2)}
-          </p>
-        </div>
-      </div>
-
-      <ResourceCapacityTable resourceCapacityQuery={resourceCapacityQuery} />
-
-      <TaskSummaryTable taskSummaryQuery={taskSummaryQuery} />
+      {taskSummaryQuery.isPending ? (
+        <Skeleton className="w-full h-[50vh]" />
+      ) : (
+        <TaskSummaryTable taskSummaryQuery={taskSummaryQuery} />
+      )}
     </main>
   )
 }
