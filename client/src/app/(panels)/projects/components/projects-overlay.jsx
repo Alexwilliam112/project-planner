@@ -207,7 +207,11 @@ export default function ProjectsOverlay({ data }) {
 
   const { errors } = generalInfoForm.formState
   React.useEffect(() => {
-    console.error(errors)
+    if (Object.keys(errors).length > 0) {
+      console.error(errors)
+
+      toast.error('Please fix the errors in the form before submitting.')
+    }
   }, [errors])
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -224,7 +228,7 @@ export default function ProjectsOverlay({ data }) {
         <DialogHeader>
           <DialogTitle>{data ? 'Update Project' : 'Create New Project'}</DialogTitle>
         </DialogHeader>
-        <Tabs className="h-[85vh] overflow-auto pb-8 px-1" defaultValue="general">
+        <Tabs className="max-h-[85vh] overflow-auto pb-8 px-1" defaultValue="general">
           <TabsList className="w-full" hidden={!data}>
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="pic">PIC</TabsTrigger>
