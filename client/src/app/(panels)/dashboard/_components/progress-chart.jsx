@@ -14,7 +14,6 @@ export default function ProgressChart() {
 
   React.useEffect(() => {
     if (taskProgressQuery.data) {
-      alert('Adaaaa')
       const newData = taskProgressQuery.data.map((d) => ({ name: d.status, value: d.total }))
 
       setData(newData)
@@ -29,8 +28,3 @@ export default function ProgressChart() {
     </div>
   )
 }
-
-const customActivePieData = [
-  { name: 'Complete', value: 700 },
-  { name: 'On Progress', value: 300 },
-]
