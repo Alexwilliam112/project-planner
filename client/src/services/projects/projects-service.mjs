@@ -4,8 +4,8 @@ import { apiClient } from '../api/api-client.mjs'
 import { PROJECTS_API } from './projects-endpoints.mjs'
 
 const projectsService = {
-  async getAll() {
-    const response = await apiClient.get(PROJECTS_API.GET_ALL)
+  async getAll({ params }) {
+    const response = await apiClient.get(PROJECTS_API.GET_ALL, { params })
 
     const { error, message, data } = response.data
 

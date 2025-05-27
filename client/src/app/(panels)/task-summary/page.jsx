@@ -5,20 +5,12 @@ import ResourceCapacityTable from './_components/resource-capacity-table'
 import TaskSummaryTable from './_components/task-summary-table'
 import { useQuery } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { format } from 'date-fns'
-import { CalendarIcon, RefreshCcw } from 'lucide-react'
-import { cn, utc7Offset } from '@/lib/utils'
+import { RefreshCcw } from 'lucide-react'
+import { utc7Offset } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { masterService, tasksService } from '@/services/index.mjs'
+import { SelectFilter } from '@/components/filter/select-filter'
+import { DatePickerFilter } from '@/components/filter/date-picker-filter'
 
 export default function TaskSummaryPage() {
   // Query Params
@@ -240,44 +232,5 @@ export default function TaskSummaryPage() {
 
       <TaskSummaryTable taskSummaryQuery={taskSummaryQuery} />
     </main>
-  )
-}
-
-function SelectFilter({ value, onValueChange, options, placeholder }) {
-  return (
-    <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent className="max-h-60 overflow-auto">
-        {options.map((o) => (
-          <SelectItem key={o.id} value={o.id}>
-            {o.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
-}
-
-function DatePickerFilter({ date, setDate, placeholder }) {
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={'outline'}
-          className={cn(
-            'w-full justify-start text-left font-normal',
-            !date && 'text-muted-foreground'
-          )}
-        >
-          <CalendarIcon />
-          {date ? format(date, 'PPP') : <span>{placeholder}</span>}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={date} onSelect={setDate} initialFocus />
-      </PopoverContent>
-    </Popover>
   )
 }
