@@ -20,11 +20,21 @@ export const projectsColumns = [
   },
   {
     accessorKey: 'product_id.name',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Product Type" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Product" />,
     cell: ({ row }) => (
-      <div className="w-[20ch] py-2 text-wrap">{row.original.product_id.name}</div>
+      <div className="w-[20ch] py-2 text-wrap">
+        <Badge
+          style={{
+            backgroundColor: row.original.product_id.color,
+            color: '#fff',
+          }}
+        >
+          {row.original.product_id.name}
+        </Badge>
+      </div>
     ),
   },
+
   {
     accessorKey: 'category_id.name',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Project Category" />,
@@ -58,8 +68,29 @@ export const projectsColumns = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="Project Status" />,
     cell: ({ row }) => (
       <div className="w-[20ch] py-2 text-wrap">
-        <Badge className={cn(`bg-[${row.original.status_id.color}]`)}>
+        <Badge
+          style={{
+            backgroundColor: row.original.status_id.color,
+            color: '#fff',
+          }}
+        >
           {row.original.status_id.name}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'priority_id.name',
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Priority" />,
+    cell: ({ row }) => (
+      <div className="w-[20ch] py-2 text-wrap">
+        <Badge
+          style={{
+            backgroundColor: row.original.priority_id.color,
+            color: '#fff',
+          }}
+        >
+          {row.original.priority_id.name}
         </Badge>
       </div>
     ),
