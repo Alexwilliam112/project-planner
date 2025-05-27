@@ -20,7 +20,7 @@ export const projectsColumns = [
   },
   {
     accessorKey: 'product_id.name',
-    header: ({ column }) => <DataTableColumnHeader column={column} title="Project Type" />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title="Product Type" />,
     cell: ({ row }) => (
       <div className="w-[20ch] py-2 text-wrap">{row.original.product_id.name}</div>
     ),

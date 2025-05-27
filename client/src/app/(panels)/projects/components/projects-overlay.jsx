@@ -32,7 +32,7 @@ const generalInfoSchema = z.object({
   category_id: z.string(),
   priority_id: z.string(),
   status_id: z.string().optional(),
-  note: z.string(),
+  note: z.string().optional(),
   date_start: z.date(),
   date_end: z.date(),
   name: z.string(),
@@ -128,7 +128,9 @@ export default function ProjectsOverlay({ data }) {
           date_start: new Date(data.date_start),
           date_end: new Date(data.date_end),
         }
-      : undefined,
+      : {
+          note: '',
+        },
   })
 
   const picForm = useForm({
