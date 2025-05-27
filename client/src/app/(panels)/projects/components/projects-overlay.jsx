@@ -225,11 +225,11 @@ export default function ProjectsOverlay({ data }) {
           <Button>Add</Button>
         )}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[80vw]">
         <DialogHeader>
           <DialogTitle>{data ? 'Update Project' : 'Create New Project'}</DialogTitle>
         </DialogHeader>
-        <Tabs className="max-h-[85vh] overflow-auto pb-8 px-1" defaultValue="general">
+        <Tabs className="max-h-[80vh] overflow-auto pb-8 px-1" defaultValue="general">
           <TabsList className="w-full" hidden={!data}>
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="pic">PIC</TabsTrigger>
@@ -240,7 +240,7 @@ export default function ProjectsOverlay({ data }) {
                 onSubmit={generalInfoForm.handleSubmit(onSubmitGeneral)}
                 className="grid grid-cols-1 md:grid-cols-2 gap-3"
               >
-                <InputField name={'name'} label={'Project Name'} />
+                <InputField className="md:col-span-2" name={'name'} label={'Project Name'} />
                 <InputField name={'company'} label={'Company'} />
                 <InputField name={'zoho_url'} label={'Zoho URL'} />
                 <SelectField
@@ -322,9 +322,9 @@ export default function ProjectsOverlay({ data }) {
               <Form {...picForm}>
                 <form
                   onSubmit={picForm.handleSubmit(onSubmitPic)}
-                  className="flex flex-col justify-between h-full"
+                  className="flex flex-col gap-4 justify-between h-full"
                 >
-                  <div className="flex flex-col gap-3">
+                  <div className="grid md:grid-cols-2 gap-3">
                     {data.pic.map((p, i) => (
                       <InputField key={i} name={`pic.${i}.pic_name`} label={p.role_name} />
                     ))}

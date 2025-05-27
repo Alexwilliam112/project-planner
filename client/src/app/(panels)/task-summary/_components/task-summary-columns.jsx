@@ -64,7 +64,7 @@ export const createTaskSummaryColumns = ({ handleEdit }) => [
   {
     accessorKey: 'progress',
     header: 'Progress',
-    cell: ({ row }) => row.original.progress || 0 + '%',
+    cell: ({ row }) => (row.original.progress ? row.original.progress + '%' : 0 + '%'),
   },
   {
     accessorKey: 'note',

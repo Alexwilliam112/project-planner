@@ -212,22 +212,22 @@ export default function TaskOverlay({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[80vw]">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="max-h-[90vh] overflow-auto pb-10 pl-2 pr-1"
+            className="max-h-[80vh] overflow-auto pb-10 pl-2 pr-1"
           >
             <DialogHeader>
               <DialogTitle>{task?._id ? 'Edit Task' : 'Create New Task'}</DialogTitle>
             </DialogHeader>
 
-            <div className="grid gap-4 py-4">
+            <div className="grid md:grid-cols-2 gap-4 py-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="md:col-span-2">
                     <FormLabel>Task Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Task name" {...field} />
@@ -243,6 +243,7 @@ export default function TaskOverlay({
                 optionLabel="name"
                 optionValue="id"
                 options={assigneeQuery.data || []}
+                placeholder="Task assignee"
               />
 
               <FormField
@@ -265,6 +266,7 @@ export default function TaskOverlay({
                 optionLabel="name"
                 optionValue="id"
                 options={projectsQuery.data || []}
+                placeholder="Task project"
               />
 
               <SelectField
@@ -274,6 +276,7 @@ export default function TaskOverlay({
                 optionValue="id"
                 disabled={!form.watch('project_id')}
                 options={mileStoneQuery.data || []}
+                placeholder="Task milestone"
               />
 
               <FormField
@@ -301,7 +304,7 @@ export default function TaskOverlay({
                 control={form.control}
                 name="note"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="md:col-span-2">
                     <FormLabel>Note</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Task description" {...field} />
@@ -319,6 +322,7 @@ export default function TaskOverlay({
                     optionLabel="name"
                     optionValue="id"
                     options={prouductQuery.data || []}
+                    placeholder=""
                   />
 
                   <SelectField
