@@ -24,6 +24,7 @@ import { Pencil } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { TabsContent } from '@radix-ui/react-tabs'
 import { utc7Offset } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const generalInfoSchema = z.object({
   zoho_url: z.string(),
@@ -65,7 +66,11 @@ export default function ProjectsOverlay({ data }) {
     mutationFn: projectsService.update,
     onSuccess: () => {
       setOpen(false)
+      toast.success('Project updated successfully')
       queryClient.refetchQueries(['projects'])
+    },
+    onError: (error) => {
+      toast.error(`Failed to update project: ${error.message}`)
     },
   })
   const updatePicMutation = useMutation({
@@ -73,7 +78,11 @@ export default function ProjectsOverlay({ data }) {
     mutationFn: projectsService.updatePIC,
     onSuccess: () => {
       setOpen(false)
+      toast.success('Project updated successfully')
       queryClient.refetchQueries(['projects'])
+    },
+    onError: (error) => {
+      toast.error(`Failed to update project PIC: ${error.message}`)
     },
   })
   const deleteMutation = useMutation({
