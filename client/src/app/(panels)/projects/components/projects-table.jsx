@@ -10,6 +10,7 @@ import { DatePickerFilter } from '@/components/filter/date-picker-filter'
 import { SelectFilter } from '@/components/filter/select-filter'
 import { Button } from '@/components/ui/button'
 import { RefreshCcw } from 'lucide-react'
+import ProjectsOverlay from './projects-overlay'
 
 export default function ProjectsTable() {
   const [division_id, setDivisionId] = useState('')
@@ -126,6 +127,10 @@ export default function ProjectsTable() {
         <Button variant="secondary" className="w-full" onClick={handleResetFilters}>
           <RefreshCcw /> Reset filter
         </Button>
+      </div>
+
+      <div>
+        <ProjectsOverlay />
       </div>
 
       <DataTable columns={projectsColumns} data={projectsQuery.data || []} />

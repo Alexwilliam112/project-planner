@@ -40,6 +40,7 @@ const generalInfoSchema = z.object({
   company: z.string(),
   est_mh: z.coerce.number(),
   division_id: z.string(),
+  progress: z.coerce.number(),
 })
 
 const picSchema = z.object({
@@ -278,13 +279,17 @@ export default function ProjectsOverlay({ data }) {
                   optionValue="id"
                 />
                 {data && (
-                  <SelectField
-                    name={'status_id'}
-                    label={'Status'}
-                    options={statusQuery.data}
-                    optionLabel="name"
-                    optionValue="id"
-                  />
+                  <>
+                    <SelectField
+                      name={'status_id'}
+                      label={'Status'}
+                      options={statusQuery.data}
+                      optionLabel="name"
+                      optionValue="id"
+                    />
+
+                    <InputField name={'progress'} label={'Progress'} type="number" />
+                  </>
                 )}
                 <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
                 <CalendarField name={'date_start'} label={'Start Date'} />

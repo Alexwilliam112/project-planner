@@ -342,7 +342,7 @@ export default function TaskOverlay({
                     name="progress"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Note</FormLabel>
+                        <FormLabel>Progress</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
