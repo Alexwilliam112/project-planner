@@ -69,7 +69,7 @@ export default function TaskOverlay({
             })
           }
 
-          if (!data.progress) {
+          if (data.progress < 0 || data.progress === undefined) {
             ctx.addIssue({
               path: ['progress'],
               code: z.ZodIssueCode.custom,
