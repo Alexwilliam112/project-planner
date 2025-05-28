@@ -293,7 +293,7 @@ export default function ProjectsOverlay({ data }) {
                 )}
                 <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
                 <CalendarField name={'date_start'} label={'Start Date'} />
-                <CalendarField name={'date_end'} label={'End Date'} />
+                <CalendarField name={'date_end'} label={'End Date'} disabled={data} />
                 <div className="col-span-1 md:col-span-2">
                   <TextareaField name={'note'} label={'Note'} />
                 </div>

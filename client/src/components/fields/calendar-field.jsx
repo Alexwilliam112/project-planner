@@ -40,7 +40,7 @@ const months = [
   'Desember',
 ]
 
-export default function CalendarField({ name, label, placeholder, description }) {
+export default function CalendarField({ name, label, placeholder, description, disabled }) {
   const form = useFormContext()
 
   // State for currently viewed month/year in the calendar
@@ -66,7 +66,7 @@ export default function CalendarField({ name, label, placeholder, description })
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger asChild disabled={disabled}>
                 <FormControl>
                   <Button
                     variant="outline"
