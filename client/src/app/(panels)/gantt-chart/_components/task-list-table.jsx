@@ -1,3 +1,6 @@
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { ChevronDown } from 'lucide-react'
 import React from 'react'
 
 export const CustomTaskListHeader = ({ headerHeight, rowWidth, fontFamily, fontSize }) => (
@@ -13,12 +16,20 @@ export const CustomTaskListHeader = ({ headerHeight, rowWidth, fontFamily, fontS
       background: '#fff',
       boxShadow: '0 2px 4px rgba(0,0,0,0.03)',
     }}
-    className="flex"
+    className="flex border-y"
   >
-    <div className="pl-8 flex-none px-2 font-bold whitespace-nowrap w-70">Task Name</div>
-    <div className="flex-none px-2 font-bold whitespace-nowrap w-30">Status</div>
-    <div className="flex-none px-2 font-bold whitespace-nowrap w-25">Start Date</div>
-    <div className="flex-none px-2 font-bold whitespace-nowrap w-25">End Date</div>
+    <div className="flex px-2 font-semibold items-center whitespace-nowrap w-70">
+      <p>Task Name</p>
+    </div>
+    <div className="flex px-2 font-semibold items-center whitespace-nowrap w-30">
+      <p>Status</p>
+    </div>
+    <div className="flex px-2 font-semibold items-center whitespace-nowrap w-25">
+      <p>Start Date</p>
+    </div>
+    <div className="flex px-2 font-semibold items-center whitespace-nowrap w-25">
+      <p>End Date</p>
+    </div>
   </div>
 )
 
@@ -80,16 +91,23 @@ export const CustomTaskListTable = ({
           >
             {/* Always show expander for projects that have (or could have) children */}
             {(task.type === 'project' || hasChildren(task)) && (
-              <button
+              <Button
                 className="mr-2 focus:outline-none"
+                variant="ghost"
+                size="icon"
                 onClick={(e) => {
                   // e.stopPropagation()
                   onExpanderClick && onExpanderClick(task)
                 }}
                 title={task.hideChildren ? 'Expand' : 'Collapse'}
               >
-                {task.hideChildren ? '▶' : '▼'}
-              </button>
+                <ChevronDown
+                  className={cn(
+                    task.hideChildren ? '-rotate-90' : '',
+                    'transition-transform duration-300'
+                  )}
+                />
+              </Button>
             )}
             <p className="text-wrap">{task.name}</p>
           </div>
