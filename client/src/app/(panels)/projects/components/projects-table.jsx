@@ -87,7 +87,7 @@ export default function ProjectsTable() {
     if (search) {
       const newData =
         projectsQuery.data?.filter((d) => {
-          const a = d.split(' ').join('').toLowerCase()
+          const a = d.name.split(' ').join('').toLowerCase()
           const b = search.toLowerCase()
 
           return a.includes(b)
@@ -96,6 +96,12 @@ export default function ProjectsTable() {
       setFilteredData(newData)
     }
   }, [search])
+
+  useEffect(() => {
+    if (projectsQuery.isSuccess) {
+      setFilteredData(projectsQuery.data)
+    }
+  }, [projectsQuery.isSuccess])
 
   return (
     <div className="flex flex-col gap-4">
@@ -157,7 +163,7 @@ export default function ProjectsTable() {
       {projectsQuery.isPending ? (
         <Skeleton className="w-full h-[80vh]" />
       ) : (
-        <DataTable columns={projectsColumns} data={projectsQuery.data || []} />
+        <DataTable columns={projectsColumns} data={filteredData} />
       )}
     </div>
   )
