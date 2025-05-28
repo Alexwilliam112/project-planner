@@ -149,7 +149,11 @@ export default function ProjectsTable() {
           options={statusQuery.data || []}
         />
 
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search..." />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by name..."
+        />
 
         <Button variant="secondary" className="w-full" onClick={handleResetFilters}>
           <RefreshCcw /> Reset filter
