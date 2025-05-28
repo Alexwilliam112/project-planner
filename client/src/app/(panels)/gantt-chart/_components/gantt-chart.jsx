@@ -8,6 +8,8 @@ import { ViewSwitcher } from './view-switcher.jsx'
 import { CustomTaskListTable, CustomTaskListHeader } from './task-list-table.jsx'
 import { useQuery } from '@tanstack/react-query'
 import { ganttService } from '@/services/index.mjs'
+import { Skeleton } from '@/components/ui/skeleton.jsx'
+import { cn } from '@/lib/utils.js'
 
 const ganttStyles = {
   rowHeight: 50,
@@ -224,32 +226,42 @@ export default function GanttChart({
   }
 
   return (
-    <div className="border rounded-md">
-      <ViewSwitcher
-        onViewModeChange={(viewMode) => setView(viewMode)}
-        onViewListChange={setIsChecked}
-        isChecked={isChecked}
-        onViewMilestoneChange={onViewMilestoneChange}
-      />
-      <Gantt
-        tasks={tasks}
-        allTasks={tasks}
-        viewMode={view}
-        onDateChange={handleTaskChange}
-        onDelete={handleTaskDelete}
-        onProgressChange={handleProgressChange}
-        onDoubleClick={handleDblClick}
-        onSelect={handleSelect}
-        listCellWidth={isChecked ? 'auto' : ''}
-        columnWidth={columnWidth}
-        TaskListHeader={CustomTaskListHeader}
-        onExpanderClick={handleExpanderClick}
-        TooltipContent={MyTooltip}
-        TaskListTable={(props) => (
-          <CustomTaskListTable {...props} allTasks={tasks} onExpanderClick={handleExpanderClick} />
-        )}
-        {...ganttStyles}
-      />
+    <div className={cn(ganttQuery.isPending ? '' : 'border', 'rounded-md')}>
+      {ganttQuery.isPending ? (
+        <Skeleton className="w-full h-[50vh]" />
+      ) : (
+        <>
+          <ViewSwitcher
+            onViewModeChange={(viewMode) => setView(viewMode)}
+            onViewListChange={setIsChecked}
+            isChecked={isChecked}
+            onViewMilestoneChange={onViewMilestoneChange}
+          />
+          <Gantt
+            tasks={tasks}
+            allTasks={tasks}
+            viewMode={view}
+            onDateChange={handleTaskChange}
+            onDelete={handleTaskDelete}
+            onProgressChange={handleProgressChange}
+            onDoubleClick={handleDblClick}
+            onSelect={handleSelect}
+            listCellWidth={isChecked ? 'auto' : ''}
+            columnWidth={columnWidth}
+            TaskListHeader={CustomTaskListHeader}
+            onExpanderClick={handleExpanderClick}
+            TooltipContent={MyTooltip}
+            TaskListTable={(props) => (
+              <CustomTaskListTable
+                {...props}
+                allTasks={tasks}
+                onExpanderClick={handleExpanderClick}
+              />
+            )}
+            {...ganttStyles}
+          />
+        </>
+      )}
     </div>
   )
 }
