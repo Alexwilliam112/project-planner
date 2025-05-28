@@ -1,8 +1,16 @@
 import React from 'react'
 import 'gantt-task-react/dist/index.css'
 import { ViewMode } from 'gantt-task-react'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 
-export const ViewSwitcher = ({ onViewModeChange, onViewListChange, isChecked }) => {
+export const ViewSwitcher = ({
+  onViewModeChange,
+  onViewListChange,
+  isChecked,
+  onViewMilestoneChange,
+}) => {
   return (
     <div className="flex flex-col md:flex-row items-center gap-4 p-4">
       <div className="flex gap-2">
@@ -18,35 +26,27 @@ export const ViewSwitcher = ({ onViewModeChange, onViewListChange, isChecked }) 
         >
           Half of Day
         </button> */}
-        <button
-          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
-          onClick={() => onViewModeChange(ViewMode.Day)}
-        >
+        <Button variant="outline" onClick={() => onViewModeChange(ViewMode.Day)}>
           Day
-        </button>
-        <button
-          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
-          onClick={() => onViewModeChange(ViewMode.Week)}
-        >
+        </Button>
+        <Button variant="outline" onClick={() => onViewModeChange(ViewMode.Week)}>
           Week
-        </button>
-        <button
-          className="px-4 py-1 rounded bg-blue-500 text-white font-semibold hover:bg-blue-600 transition"
-          onClick={() => onViewModeChange(ViewMode.Month)}
-        >
+        </Button>
+        <Button variant="outline" onClick={() => onViewModeChange(ViewMode.Month)}>
           Month
-        </button>
+        </Button>
       </div>
       <div className="flex items-center gap-2">
-        <label className="flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            className="form-checkbox h-5 w-5 text-blue-600"
-            checked={isChecked}
-            onChange={() => onViewListChange(!isChecked)}
-          />
-          <span className="ml-2 text-gray-700">Show Task List</span>
-        </label>
+        <Checkbox checked={isChecked} onCheckedChange={() => onViewListChange(!isChecked)} />
+        <Label>Show Task List</Label>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Checkbox
+          onCheckedChange={(checked) => onViewMilestoneChange(checked)}
+          defaultChecked={true}
+        />
+        <Label>Show Show All Milestones</Label>
       </div>
     </div>
   )

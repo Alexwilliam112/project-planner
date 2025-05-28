@@ -214,12 +214,23 @@ export default function GanttChart({
     )
   }
 
+  const onViewMilestoneChange = (checked) => {
+    if (checked) {
+      const newTasks = tasks.slice().map((task) => ({ ...task, hideChildren: false }))
+      setTasks(newTasks)
+    } else {
+      const newTasks = tasks.slice().map((task) => ({ ...task, hideChildren: true }))
+      setTasks(newTasks)
+    }
+  }
+
   return (
     <div className="border rounded-md">
       <ViewSwitcher
         onViewModeChange={(viewMode) => setView(viewMode)}
         onViewListChange={setIsChecked}
         isChecked={isChecked}
+        onViewMilestoneChange={onViewMilestoneChange}
       />
       <Gantt
         tasks={tasks}
