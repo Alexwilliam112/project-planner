@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
@@ -70,10 +71,11 @@ export const CustomTaskListTable = ({
   }
 
   return (
-    <div style={{ width: rowWidth, fontFamily, fontSize }} className="border-b">
+    <div style={{ width: rowWidth, fontFamily, fontSize }}>
       {getVisibleTasks().map((task) => (
         <div
           key={task.id}
+          className={cn(task.status && 'border-y')}
           style={{
             height: rowHeight,
             background: task.id === selectedTaskId ? '#f0f0f0' : 'transparent',
@@ -112,7 +114,13 @@ export const CustomTaskListTable = ({
             <p className="text-wrap">{task.name}</p>
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-30">
-            {task.status ? task.status : task.progress + ' %'}
+            {task.status ? (
+              <div className="border text-center rounded-md py-1 bg-yellow-50 font-medium text-sm">
+                {task.status}
+              </div>
+            ) : (
+              task.progress + ' %'
+            )}
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-25">
             {task.date_start instanceof Date ? task.date_start.toLocaleDateString() : ''}
