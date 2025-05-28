@@ -1,5 +1,3 @@
-'use client'
-
 import React from 'react'
 
 export const CustomTaskListHeader = ({ headerHeight, rowWidth, fontFamily, fontSize }) => (
@@ -61,7 +59,7 @@ export const CustomTaskListTable = ({
   }
 
   return (
-    <div style={{ width: rowWidth, fontFamily, fontSize }}>
+    <div style={{ width: rowWidth, fontFamily, fontSize }} className="border-b">
       {getVisibleTasks().map((task) => (
         <div
           key={task.id}
@@ -75,17 +73,17 @@ export const CustomTaskListTable = ({
           onClick={() => setSelectedTask(task.id)}
         >
           <div
-            className="pl-3 flex-none px-2 whitespace-nowrap w-70 flex items-center"
+            className="pl-3 flex-none px-2 whitespace-nowrap w-70 text-wrap flex items-center"
             style={{
               paddingLeft: `${getTaskDepth(task, allTasks) * 20 + 12}px`,
             }}
           >
             {/* Always show expander for projects that have (or could have) children */}
-            {task.type === 'project' && hasChildren(task) && (
+            {(task.type === 'project' || hasChildren(task)) && (
               <button
                 className="mr-2 focus:outline-none"
                 onClick={(e) => {
-                  e.stopPropagation()
+                  // e.stopPropagation()
                   onExpanderClick && onExpanderClick(task)
                 }}
                 title={task.hideChildren ? 'Expand' : 'Collapse'}
@@ -93,16 +91,16 @@ export const CustomTaskListTable = ({
                 {task.hideChildren ? '▶' : '▼'}
               </button>
             )}
-            {task.name}
+            <p className="text-wrap">{task.name}</p>
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-30">
             {task.status ? task.status : task.progress + ' %'}
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-25">
-            {task.start instanceof Date ? task.start.toLocaleDateString() : ''}
+            {task.date_start instanceof Date ? task.date_start.toLocaleDateString() : ''}
           </div>
           <div className="flex-none px-2 whitespace-nowrap w-25">
-            {task.end instanceof Date ? task.end.toLocaleDateString() : ''}
+            {task.date_end instanceof Date ? task.date_end.toLocaleDateString() : ''}
           </div>
         </div>
       ))}

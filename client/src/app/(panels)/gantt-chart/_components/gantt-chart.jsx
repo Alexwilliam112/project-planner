@@ -102,7 +102,7 @@ export default function GanttChart({
           hideChildren: false,
           styles: data.styles,
           dependencies: data.dependencies,
-          project: data.project_id?.name || '',
+          project: data.project_id?.id || '',
         }))
 
         setTasks(newTasks)
@@ -167,7 +167,6 @@ export default function GanttChart({
   )
 
   const handleTaskChange = (task) => {
-    console.log('On date change Id:' + task.id)
     let newTasks = tasks.map((t) => (t.id === task.id ? task : t))
 
     let currentTask = task

@@ -5,15 +5,19 @@ import { projectsColumns } from './projects-columns'
 import { useQuery } from '@tanstack/react-query'
 import { projectsService } from '@/services'
 import { masterService } from '@/services'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DatePickerFilter } from '@/components/filter/date-picker-filter'
 import { SelectFilter } from '@/components/filter/select-filter'
 import { Button } from '@/components/ui/button'
 import { RefreshCcw } from 'lucide-react'
 import ProjectsOverlay from './projects-overlay'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Input } from '@/components/ui/input'
 
 export default function ProjectsTable() {
+  const [filteredData, setFilteredData] = useState([])
+
+  const [search, setSearch] = useState('')
   const [division_id, setDivisionId] = useState('')
   const [category_id, setCategoryId] = useState('')
   const [project_owner_id, setProjectOwnerId] = useState('')
@@ -79,6 +83,20 @@ export default function ProjectsTable() {
     queryFn: masterService.getCategories,
   })
 
+  useEffect(() => {
+    if (search) {
+      const newData =
+        projectsQuery.data?.filter((d) => {
+          const a = d.split(' ').join('').toLowerCase()
+          const b = search.toLowerCase()
+
+          return a.includes(b)
+        }) || []
+
+      setFilteredData(newData)
+    }
+  }, [search])
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -124,6 +142,8 @@ export default function ProjectsTable() {
           placeholder="Search by status..."
           options={statusQuery.data || []}
         />
+
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search..." />
 
         <Button variant="secondary" className="w-full" onClick={handleResetFilters}>
           <RefreshCcw /> Reset filter
