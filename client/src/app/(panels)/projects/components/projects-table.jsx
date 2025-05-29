@@ -13,11 +13,12 @@ import { RefreshCcw } from 'lucide-react'
 import ProjectsOverlay from './projects-overlay'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
+import { useDebounce } from '@/hooks/use-debounce'
 
 export default function ProjectsTable() {
-  const [filteredData, setFilteredData] = useState([])
+  const [globalFilter, setGlobalFilter] = useState('')
+  const debouncedSearch = useDebounce(globalFilter, 500)
 
-  const [search, setSearch] = useState('')
   const [division_id, setDivisionId] = useState('')
   const [category_id, setCategoryId] = useState('')
   const [project_owner_id, setProjectOwnerId] = useState('')
@@ -34,6 +35,7 @@ export default function ProjectsTable() {
     setStatusId('')
     setDateStart('')
     setDateEnd('')
+    setGlobalFilter('')
   }
 
   const projectsQuery = useQuery({
@@ -83,26 +85,6 @@ export default function ProjectsTable() {
     queryFn: masterService.getCategories,
   })
 
-  useEffect(() => {
-    if (search) {
-      const newData =
-        projectsQuery.data?.filter((d) => {
-          const a = d.name.split(' ').join('').toLowerCase()
-          const b = search.toLowerCase()
-
-          return a.includes(b)
-        }) || []
-
-      setFilteredData(newData)
-    }
-  }, [search])
-
-  useEffect(() => {
-    if (projectsQuery.isSuccess) {
-      setFilteredData(projectsQuery.data)
-    }
-  }, [projectsQuery.isSuccess])
-
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -150,8 +132,9 @@ export default function ProjectsTable() {
         />
 
         <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          className="text-sm"
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder="Search by name..."
         />
 
@@ -167,7 +150,12 @@ export default function ProjectsTable() {
       {projectsQuery.isPending ? (
         <Skeleton className="w-full h-[80vh]" />
       ) : (
-        <DataTable columns={projectsColumns} data={filteredData} />
+        <DataTable
+          columns={projectsColumns}
+          data={projectsQuery.data || []}
+          globalFilter={globalFilter}
+          onGlobalFilterChange={setGlobalFilter}
+        />
       )}
     </div>
   )

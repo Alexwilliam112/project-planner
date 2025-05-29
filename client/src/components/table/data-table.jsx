@@ -16,22 +16,30 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useState } from 'react'
 
-export function DataTable({ columns, data }) {
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-
+export function DataTable({
+  columns,
+  data,
+  globalFilter,
+  columnFilters,
+  sorting,
+  onGlobalFilterChange,
+  onColumnFiltersChange,
+  onSortingChange,
+}) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange,
+    onColumnFiltersChange,
+    onGlobalFilterChange,
     state: {
       sorting,
       columnFilters,
+      globalFilter,
     },
   })
 

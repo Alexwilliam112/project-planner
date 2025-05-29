@@ -2,10 +2,7 @@
 
 import { DataTableColumnHeader } from '@/components/table/column-header.jsx'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
-import { Pencil } from 'lucide-react'
 import ProjectsOverlay from './projects-overlay'
 
 export const projectsColumns = [
