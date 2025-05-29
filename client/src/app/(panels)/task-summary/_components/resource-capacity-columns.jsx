@@ -37,10 +37,12 @@ export const resourceCapacityColumns = [
   {
     accessorKey: 'current_mh',
     header: 'Current MH',
+    cell: ({ row }) => <div className="py-2">{(row.original.current_mh).toFixed(2)}</div>,
   },
   {
     accessorKey: 'idle_mh',
     header: 'Idle MH',
+    cell: ({ row }) => <div className="py-2">{(row.original.idle_mh).toFixed(2)}</div>,
   },
   {
     accessorKey: 'capacity',
