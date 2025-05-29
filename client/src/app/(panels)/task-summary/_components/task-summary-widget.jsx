@@ -23,7 +23,7 @@ export default function TaskSummaryWidget({ workdaysQuery, totalCapacity }) {
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
         <p className="text-lg text-muted-foreground">Max MH</p>
-        <p className="text-2xl font-semibold">{workdaysQuery?.data?.holidays}</p>
+        <p className="text-2xl font-semibold">{workdaysQuery?.data?.max_mh}</p>
       </div>
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
