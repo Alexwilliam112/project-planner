@@ -40,7 +40,7 @@ const generalInfoSchema = z.object({
   company: z.string(),
   est_mh: z.coerce.number(),
   division_id: z.string(),
-  progress: z.coerce.number(),
+  progress: z.coerce.number().optional(),
 })
 
 const picSchema = z.object({
