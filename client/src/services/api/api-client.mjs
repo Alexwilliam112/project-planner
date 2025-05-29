@@ -25,4 +25,26 @@ apiClient.interceptors.request.use(
   }
 )
 
+apiClient.interceptors.response.use(
+  async (response) => {
+    // Error handling
+    if (response.data.error) {
+      console.log('API CLIENT ===> Error while fetching:', response.config.url)
+      const message = response.data.message || 'Error while fetching'
+
+      throw new Error(message)
+    }
+
+    return response
+  },
+  async (error) => {
+    // Handle network errors or errors thrown by Axios itself
+    if (error.response && error.response.data) {
+      return error.response
+    }
+
+    return Promise.reject(error)
+  }
+)
+
 export { apiClient }

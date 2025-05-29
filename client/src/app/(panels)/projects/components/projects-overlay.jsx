@@ -61,6 +61,11 @@ export default function ProjectsOverlay({ data }) {
       setOpen(false)
       queryClient.refetchQueries(['projects'])
     },
+    onError: (error) => {
+      toast.error('Failed', {
+        description: `Failed to create project: ${error.message}`,
+      })
+    },
   })
   const updateMutation = useMutation({
     mutationKey: ['update-project'],
@@ -71,7 +76,9 @@ export default function ProjectsOverlay({ data }) {
       queryClient.refetchQueries(['projects'])
     },
     onError: (error) => {
-      toast.error(`Failed to update project: ${error.message}`)
+      toast.error('Failed', {
+        description: `Failed to update project: ${error.message}`,
+      })
     },
   })
   const updatePicMutation = useMutation({
