@@ -11,6 +11,7 @@ export const projectsColumns = [
     cell: ({ row }) => <ProjectsOverlay data={row.original} />,
   },
   {
+    id: 'project_name',
     accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title="Project Name" />,
     cell: ({ row }) => <div className="w-[20ch] py-2 text-wrap">{row.original.name}</div>,

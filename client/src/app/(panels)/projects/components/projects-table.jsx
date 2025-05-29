@@ -9,16 +9,15 @@ import { useState, useEffect } from 'react'
 import { DatePickerFilter } from '@/components/filter/date-picker-filter'
 import { SelectFilter } from '@/components/filter/select-filter'
 import { Button } from '@/components/ui/button'
-import { RefreshCcw } from 'lucide-react'
+import { RefreshCcw, Search } from 'lucide-react'
 import ProjectsOverlay from './projects-overlay'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
-import { useDebounce } from '@/hooks/use-debounce'
 
 export default function ProjectsTable() {
-  const [globalFilter, setGlobalFilter] = useState('')
-  const debouncedSearch = useDebounce(globalFilter, 500)
+  const [columnFilters, setColumnFilters] = useState([])
 
+  const [project_name, setProjectName] = useState('')
   const [division_id, setDivisionId] = useState('')
   const [category_id, setCategoryId] = useState('')
   const [project_owner_id, setProjectOwnerId] = useState('')
@@ -35,7 +34,7 @@ export default function ProjectsTable() {
     setStatusId('')
     setDateStart('')
     setDateEnd('')
-    setGlobalFilter('')
+    setColumnFilters([])
   }
 
   const projectsQuery = useQuery({
@@ -85,6 +84,15 @@ export default function ProjectsTable() {
     queryFn: masterService.getCategories,
   })
 
+  useEffect(() => {
+    setColumnFilters([
+      {
+        id: 'project_name',
+        value: project_name,
+      },
+    ])
+  }, [project_name])
+
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -133,8 +141,8 @@ export default function ProjectsTable() {
 
         <Input
           className="text-sm"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          value={project_name}
+          onChange={(e) => setProjectName(e.target.value)}
           placeholder="Search by name..."
         />
 
@@ -153,8 +161,8 @@ export default function ProjectsTable() {
         <DataTable
           columns={projectsColumns}
           data={projectsQuery.data || []}
-          globalFilter={globalFilter}
-          onGlobalFilterChange={setGlobalFilter}
+          columnFilters={columnFilters}
+          onColumnFiltersChange={setColumnFilters}
         />
       )}
     </div>
