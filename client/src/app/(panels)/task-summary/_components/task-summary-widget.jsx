@@ -22,8 +22,8 @@ export default function TaskSummaryWidget({ workdaysQuery, totalCapacity }) {
       </div>
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-        <p className="text-lg text-muted-foreground">Max MH</p>
-        <p className="text-2xl font-semibold">{workdaysQuery?.data?.max_mh}</p>
+        <p className="text-lg text-muted-foreground">Weekend</p>
+        <p className="text-2xl font-semibold">{workdaysQuery?.data?.weekend}</p>
       </div>
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
@@ -32,8 +32,8 @@ export default function TaskSummaryWidget({ workdaysQuery, totalCapacity }) {
       </div>
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
-        <p className="text-lg text-muted-foreground">Weekend</p>
-        <p className="text-2xl font-semibold">{workdaysQuery?.data?.weekend}</p>
+        <p className="text-lg text-muted-foreground">Max MH</p>
+        <p className="text-2xl font-semibold">{workdaysQuery?.data?.max_mh}</p>
       </div>
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
