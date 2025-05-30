@@ -249,7 +249,7 @@ export default function ProjectsOverlay({ data }) {
               >
                 <InputField className="md:col-span-2" name={'name'} label={'Project Name'} />
                 <InputField name={'company'} label={'Company'} />
-                <InputField name={'zoho_url'} label={'Zoho URL'} />
+                <InputField name={'zoho_url'} label={'Zoho ID / URL'} />
                 <SelectField
                   name={'project_owner_id'}
                   label={'Project Owner'}
