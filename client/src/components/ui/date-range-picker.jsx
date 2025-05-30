@@ -1,53 +1,64 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect } from 'react'
-import { Calendar } from '@/components/ui/calendar'
+import { useState, useRef, useEffect } from "react";
+import { Calendar } from "@/components/ui/calendar";
 
-export function DateRangePicker({ value, onChange, placeholder = 'Select date range' }) {
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [dateRange, setDateRange] = useState(value || { from: null, to: null })
-  const pickerRef = useRef(null)
+export function DateRangePicker({
+  value,
+  onChange,
+  placeholder = "Select date range",
+  disabled = false,
+}) {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [dateRange, setDateRange] = useState(value || { from: null, to: null });
+  const pickerRef = useRef(null);
 
   const handleDateChange = (range) => {
     const updatedRange = {
       from: range?.from || null,
       to: range?.to || null,
-    }
-    setDateRange(updatedRange)
+    };
+    setDateRange(updatedRange);
     if (updatedRange.from && updatedRange.to) {
-      onChange(updatedRange)
-      setIsCalendarOpen(false) // Close calendar after both dates are selected
+      onChange(updatedRange);
+      setIsCalendarOpen(false); // Close calendar after both dates are selected
     }
-  }
+  };
 
   const handleClickOutside = (event) => {
     if (pickerRef.current && !pickerRef.current.contains(event.target)) {
-      setIsCalendarOpen(false)
+      setIsCalendarOpen(false);
     }
-  }
+  };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const formatDate = (date) => {
-    if (!date) return ''
-    return new Date(date).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    })
-  }
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
   return (
     <div className="relative" ref={pickerRef}>
       {/* Input Field */}
       <div
-        className="border p-2 rounded cursor-pointer w-full"
-        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+        className={`border p-2 rounded w-full ${
+          disabled
+            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+            : "cursor-pointer"
+        }`}
+        onClick={() => !disabled && setIsCalendarOpen(!isCalendarOpen)}
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
       >
         {dateRange.from && dateRange.to ? (
           `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`
@@ -57,11 +68,15 @@ export function DateRangePicker({ value, onChange, placeholder = 'Select date ra
       </div>
 
       {/* Calendar */}
-      {isCalendarOpen && (
+      {isCalendarOpen && !disabled && (
         <div className="absolute z-10 mt-2 bg-white border rounded shadow-lg">
-          <Calendar mode="range" selected={dateRange} onSelect={handleDateChange} />
+          <Calendar
+            mode="range"
+            selected={dateRange}
+            onSelect={handleDateChange}
+          />
         </div>
       )}
     </div>
-  )
+  );
 }
