@@ -136,7 +136,7 @@ export default function TaskSummaryPage() {
 
   const sumCurrentMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.current_mh, 0)
   const sumTotalMh = resourceCapacityQuery.data?.reduce((acc, obj) => acc + obj.total_mh, 0)
-  const totalCapacity = Number(sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh : 0).toFixed(
+  const totalCapacity = Number(sumCurrentMh && sumTotalMh ? sumCurrentMh / sumTotalMh * 100 : 0).toFixed(
     2
   )
 

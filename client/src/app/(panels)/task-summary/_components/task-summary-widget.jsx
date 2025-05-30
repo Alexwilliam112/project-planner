@@ -38,7 +38,7 @@ export default function TaskSummaryWidget({ workdaysQuery, totalCapacity }) {
 
       <div className="flex flex-col w-full text-center border rounded-md py-3 px-2">
         <p className="text-lg text-muted-foreground">Total Capacity</p>
-        <p className="text-2xl font-semibold">{totalCapacity}</p>
+        <p className="text-2xl font-semibold">{totalCapacity} %</p>
       </div>
     </div>
   )
