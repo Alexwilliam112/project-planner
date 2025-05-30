@@ -34,7 +34,7 @@ export const navItems = [
     icon: <NotebookPen />,
   },
   {
-    title: 'Task Summary',
+    title: 'Capacity Estimation',
     href: '/task-summary',
     icon: <LaptopMinimalCheck />,
   },
