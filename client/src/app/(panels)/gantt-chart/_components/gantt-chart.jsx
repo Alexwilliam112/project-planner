@@ -97,6 +97,7 @@ export default function GanttChart({
           type_of_custom: data.product_id?.name || '',
           type_of_project: data.product_id?.name || '',
           status: data.status_id?.name || '',
+          status_color: data.status_id?.color || '',
           start: data.date_start ? new Date(data.date_start) : new Date(),
           end: data.date_end ? new Date(data.date_end) : new Date(),
           progress: data.progress,
@@ -104,9 +105,11 @@ export default function GanttChart({
           styles: data.styles,
           dependencies: data.dependencies,
           project: data.project_id?.id || '',
+          project_owner: data.project_owner_id?.name || '',
         }))
 
         setTasks(newTasks)
+        console.log('Gantt tasks updated:', newTasks) 
       } else {
         setTasks([
           {
