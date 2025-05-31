@@ -230,37 +230,55 @@ export default function TaskOverlay({
   React.useEffect(() => {
     if (defaultStartDateQuery.data && dayOffQuery.data) {
       const calculateDates = async () => {
-        const startDate = new Date(defaultStartDateQuery.data.date_start)
-        const estimatedHours = est_mh || 0 // Use getValues instead of watch
+        // 1. Create dates with explicit UTC+7 handling
+        const toUTC7 = (date) => {
+          const d = new Date(date)
+          d.setMinutes(d.getMinutes() + d.getTimezoneOffset() + 420) // UTC+7 = 420 mins
+          return d
+        }
 
-        // First set the start date
-        await form.setValue('date_range.from', startDate, { shouldValidate: true })
+        const startDate = toUTC7(defaultStartDateQuery.data.date_start)
+        const estimatedHours = form.getValues('est_mh') || 0
 
-        // Process holidays/day offs
+        // 2. Set the start date with UTC+7 timezone
+        await form.setValue('date_range.from', startDate, {
+          shouldValidate: true,
+        })
+
+        // 3. Process holidays/day offs with UTC+7 dates
         const dayOffDates = [...dayOffQuery.data.holidays, ...dayOffQuery.data.timeoffs].map(
-          (item) => new Date(item.date).setHours(0, 0, 0, 0)
-        ) // Compare dates by timestamp
+          (item) => {
+            const date = toUTC7(item.date)
+            date.setHours(0, 0, 0, 0)
+            return date.getTime() // Compare by timestamp
+          }
+        )
 
-        const calculateEndDate = (start, totalHours = 0) => {
+        const calculateEndDate = (start, totalHours) => {
           const WORKING_HOURS_PER_DAY = 9
-          const WORKING_START_HOUR = 9
-          const WORKING_END_HOUR = 18
+          const WORKING_START_HOUR = 9 // 9AM UTC+7
+          const WORKING_END_HOUR = 18 // 6PM UTC+7
 
-          let currentDate = new Date(start) + utc7Offset
+          let currentDate = new Date(start)
           let remainingHours = totalHours
 
-          // Normalize start time
-          let currentHour = Math.max(currentDate.getHours(), WORKING_START_HOUR)
-          if (currentDate.getHours() >= WORKING_END_HOUR) {
-            currentDate.setDate(currentDate.getDate() + 1)
-            currentHour = WORKING_START_HOUR
-          }
-          currentDate.setHours(currentHour, 0, 0, 0)
+          // 4. Normalize to UTC+7 working hours
+          currentDate = toUTC7(currentDate)
+          let currentHour = currentDate.getHours()
 
-          // Helper to check if date is a working day
+          // Adjust if outside working hours
+          if (currentHour < WORKING_START_HOUR) {
+            currentDate.setHours(WORKING_START_HOUR, 0, 0, 0)
+          } else if (currentHour >= WORKING_END_HOUR) {
+            currentDate.setDate(currentDate.getDate() + 1)
+            currentDate.setHours(WORKING_START_HOUR, 0, 0, 0)
+          }
+
+          // 5. Helper function with UTC+7 awareness
           const isWorkingDay = (date) => {
-            const day = date.getDay()
-            const dateTimestamp = date.setHours(0, 0, 0, 0)
+            const utc7Date = toUTC7(date)
+            const day = utc7Date.getDay()
+            const dateTimestamp = new Date(utc7Date).setHours(0, 0, 0, 0)
             return day !== 0 && day !== 6 && !dayOffDates.includes(dateTimestamp)
           }
 
@@ -296,7 +314,7 @@ export default function TaskOverlay({
             currentDate.setHours(WORKING_END_HOUR - 1, 59, 59)
           }
 
-          return currentDate
+          return toUTC7(currentDate) // Ensure returned date is in UTC+7
         }
 
         if (estimatedHours > 0) {
