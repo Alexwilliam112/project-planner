@@ -2,19 +2,40 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Calendar } from '@/components/ui/calendar'
-import { Button } from './button'
+import { Button } from '@/components/ui/button'
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+  FormMessage,
+} from '@/components/ui/form'
+import { useController } from 'react-hook-form'
 
-export function DateTimeRangePicker({
-  value,
-  onChange,
+export function DateTimeRangeFormField({
+  name,
+  control,
+  label,
+  description,
   placeholder = 'Select date and time range',
   disabled = false,
+  required = false,
 }) {
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    name,
+    control,
+    rules: required ? { required: 'This field is required' } : undefined,
+  })
+
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
-  const [dateRange, setDateRange] = useState(value || { from: null, to: null })
+  const [dateRange, setDateRange] = useState(field.value || { from: null, to: null })
   const [timeRange, setTimeRange] = useState({
-    from: value?.from ? new Date(value.from).toTimeString().substring(0, 5) : '00:00',
-    to: value?.to ? new Date(value.to).toTimeString().substring(0, 5) : '00:00',
+    from: field.value?.from ? new Date(field.value.from).toTimeString().substring(0, 5) : '00:00',
+    to: field.value?.to ? new Date(field.value.to).toTimeString().substring(0, 5) : '00:00',
   })
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
@@ -52,7 +73,7 @@ export function DateTimeRangePicker({
         to: toDate,
       }
 
-      onChange(updatedRange)
+      field.onChange(updatedRange)
     }
   }
 
@@ -72,7 +93,7 @@ export function DateTimeRangePicker({
         to: toDate,
       }
 
-      onChange(updatedRange)
+      field.onChange(updatedRange)
       setIsCalendarOpen(false)
     }
   }
@@ -90,7 +111,18 @@ export function DateTimeRangePicker({
     }
   }, [])
 
-  useEffect(() => {}, [value])
+  // Sync with form field value changes
+  useEffect(() => {
+    if (field.value) {
+      setDateRange(field.value)
+      setTimeRange({
+        from: field.value?.from
+          ? new Date(field.value.from).toTimeString().substring(0, 5)
+          : '00:00',
+        to: field.value?.to ? new Date(field.value.to).toTimeString().substring(0, 5) : '00:00',
+      })
+    }
+  }, [field.value])
 
   const formatDateTime = (date) => {
     if (!date) return ''
@@ -137,94 +169,106 @@ export function DateTimeRangePicker({
   }
 
   return (
-    <div className="relative text-sm" ref={pickerRef}>
-      {/* Input Field */}
-      <div
-        className={`border p-2 rounded w-full ${
-          disabled ? 'bg-gray-100 cursor-not-allowed text-gray-400' : 'cursor-pointer'
-        }`}
-        onClick={() => !disabled && setIsCalendarOpen(!isCalendarOpen)}
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled}
-      >
-        {dateRange.from && dateRange.to ? (
-          `${formatDateTime(dateRange.from)} - ${formatDateTime(dateRange.to)}`
-        ) : (
-          <span className="text-gray-400">{placeholder}</span>
-        )}
-      </div>
-
-      {/* Calendar and Time Picker */}
-      {isCalendarOpen && !disabled && (
-        <div className="absolute z-10 mt-2 bg-white border rounded shadow-lg p-4 w-auto">
-          {/* Year and Month Selectors */}
-          <div className="flex gap-2 mb-4">
-            <select
-              className="border rounded p-1"
-              value={selectedYear}
-              onChange={(e) => handleYearChange(Number(e.target.value))}
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-            <select
-              className="border rounded p-1"
-              value={selectedMonth}
-              onChange={(e) => handleMonthChange(Number(e.target.value))}
-            >
-              {months.map((month, index) => (
-                <option key={month} value={index}>
-                  {month}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <Calendar
-            mode="range"
-            selected={dateRange}
-            onSelect={handleDateChange}
-            month={new Date(selectedYear, selectedMonth)}
-            onMonthChange={(date) => {
-              setSelectedYear(date.getFullYear())
-              setSelectedMonth(date.getMonth())
-            }}
-          />
-
-          {/* Time Picker */}
-          <div className="flex gap-4 mt-4 items-center w-full">
-            <div>
-              <label className="block text-sm font-medium mb-1">Start Time</label>
-              <input
-                type="time"
-                value={timeRange.from}
-                onChange={(e) => handleTimeChange('from', e.target.value)}
-                className="border rounded p-1"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">End Time</label>
-              <input
-                type="time"
-                value={timeRange.to}
-                onChange={(e) => handleTimeChange('to', e.target.value)}
-                className="border rounded p-1"
-              />
-            </div>
-          </div>
-
-          <Button
-            onClick={handleCompleteSelection}
-            disabled={!dateRange.from || !dateRange.to}
-            className="w-full mt-4"
+    <FormItem>
+      {label && <FormLabel>{label}</FormLabel>}
+      <FormControl>
+        <div className="relative text-sm" ref={pickerRef}>
+          {/* Input Field */}
+          <div
+            className={`flex h-9 shadow-xs w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+              disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+            } ${error ? 'border-destructive' : ''}`}
+            onClick={() => !disabled && setIsCalendarOpen(!isCalendarOpen)}
+            tabIndex={disabled ? -1 : 0}
+            aria-disabled={disabled}
           >
-            Apply
-          </Button>
+            {dateRange.from && dateRange.to ? (
+              `${formatDateTime(dateRange.from)} - ${formatDateTime(dateRange.to)}`
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
+          </div>
+
+          {/* Calendar and Time Picker */}
+          {isCalendarOpen && !disabled && (
+            <div className="absolute z-50 mt-2 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none w-auto">
+              {/* Year and Month Selectors */}
+              <div className="flex gap-2 mb-4">
+                <select
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  value={selectedYear}
+                  onChange={(e) => handleYearChange(Number(e.target.value))}
+                >
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  value={selectedMonth}
+                  onChange={(e) => handleMonthChange(Number(e.target.value))}
+                >
+                  {months.map((month, index) => (
+                    <option key={month} value={index}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <Calendar
+                mode="range"
+                selected={dateRange}
+                onSelect={handleDateChange}
+                month={new Date(selectedYear, selectedMonth)}
+                onMonthChange={(date) => {
+                  setSelectedYear(date.getFullYear())
+                  setSelectedMonth(date.getMonth())
+                }}
+                className="rounded-md border shadow"
+              />
+
+              {/* Time Picker */}
+              <div className="flex gap-4 mt-4 items-center w-full">
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Start Time
+                  </label>
+                  <input
+                    type="time"
+                    value={timeRange.from}
+                    onChange={(e) => handleTimeChange('from', e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={timeRange.to}
+                    onChange={(e) => handleTimeChange('to', e.target.value)}
+                    className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+                </div>
+              </div>
+
+              <Button
+                onClick={handleCompleteSelection}
+                disabled={!dateRange.from || !dateRange.to}
+                className="w-full mt-4"
+              >
+                Apply
+              </Button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </FormControl>
+      {description && <FormDescription>{description}</FormDescription>}
+      <FormMessage />
+    </FormItem>
   )
 }

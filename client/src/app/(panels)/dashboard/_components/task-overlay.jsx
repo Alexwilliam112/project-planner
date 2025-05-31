@@ -16,13 +16,14 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { DateTimeRangePicker } from '@/components/ui/date-range-picker'
+import { DateTimeRangeFormField, DateTimeRangePicker } from '@/components/ui/date-range-picker'
 import { useQuery } from '@tanstack/react-query'
 import { masterService, tasksService } from '@/services/index.mjs'
 import CalendarField from '@/components/fields/calendar-field'
 import SelectField from '@/components/fields/select-field'
 import { utc7Offset } from '@/lib/utils'
 import { toast } from 'sonner'
+import { format } from 'date-fns'
 
 const taskSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -228,98 +229,89 @@ export default function TaskOverlay({
 
   React.useEffect(() => {
     if (defaultStartDateQuery.data && dayOffQuery.data) {
-      const startDate = new Date(defaultStartDateQuery.data.date_start)
-      const estimatedHours = form.watch('est_mh') || 0
+      const calculateDates = async () => {
+        const startDate = new Date(defaultStartDateQuery.data.date_start)
+        const estimatedHours = est_mh || 0 // Use getValues instead of watch
 
-      // Set the start date
-      form.setValue('date_range.from', startDate)
+        // First set the start date
+        await form.setValue('date_range.from', startDate, { shouldValidate: true })
 
-      // Get holiday/day off dates
-      const dayOffDates = ([...dayOffQuery.data.holidays, ...dayOffQuery.data.timeoffs] || []).map(
-        (item) => {
-          const date = new Date(item.date)
-          return date.toDateString() // Convert to string for easy comparison
-        }
-      )
+        // Process holidays/day offs
+        const dayOffDates = [...dayOffQuery.data.holidays, ...dayOffQuery.data.timeoffs].map(
+          (item) => new Date(item.date).setHours(0, 0, 0, 0)
+        ) // Compare dates by timestamp
 
-      // Calculate end date with working hours constraint
-      const calculateEndDate = (start, totalHours) => {
-        const workingHoursPerDay = 9 // 9AM to 6PM = 9 hours
-        const workingStartHour = 9
-        const workingEndHour = 18
+        const calculateEndDate = (start, totalHours = 0) => {
+          const WORKING_HOURS_PER_DAY = 9
+          const WORKING_START_HOUR = 9
+          const WORKING_END_HOUR = 18
 
-        let currentDate = new Date(start)
-        let remainingHours = totalHours
+          let currentDate = new Date(start) + utc7Offset
+          let remainingHours = totalHours
 
-        // Get the current hour of the start date
-        let currentHour = currentDate.getHours()
-        let currentMinutes = currentDate.getMinutes()
-
-        // If start time is before 9AM, set it to 9AM
-        if (currentHour < workingStartHour) {
-          currentHour = workingStartHour
-          currentMinutes = 0
-        }
-
-        // If start time is after 6PM, move to next day at 9AM
-        if (currentHour >= workingEndHour) {
-          currentDate.setDate(currentDate.getDate() + 1)
-          currentHour = workingStartHour
-          currentMinutes = 0
-        }
-
-        // Initial check: skip if start date is a holiday/day off
-        while (
-          currentDate.getDay() === 0 ||
-          currentDate.getDay() === 6 ||
-          dayOffDates.includes(currentDate.toDateString())
-        ) {
-          currentDate.setDate(currentDate.getDate() + 1)
-          currentHour = workingStartHour
-          currentMinutes = 0
-        }
-
-        while (remainingHours > 0) {
-          // Calculate available hours for current day
-          const availableHoursToday = workingEndHour - currentHour - currentMinutes / 60
-
-          if (remainingHours <= availableHoursToday) {
-            // Remaining hours fit in current day
-            const additionalMinutes = Math.floor(remainingHours * 60)
-            currentDate.setHours(currentHour, currentMinutes + additionalMinutes)
-            remainingHours = 0
-          } else {
-            // Move to next day
-            remainingHours -= availableHoursToday
+          // Normalize start time
+          let currentHour = Math.max(currentDate.getHours(), WORKING_START_HOUR)
+          if (currentDate.getHours() >= WORKING_END_HOUR) {
             currentDate.setDate(currentDate.getDate() + 1)
-            currentHour = workingStartHour
-            currentMinutes = 0
+            currentHour = WORKING_START_HOUR
+          }
+          currentDate.setHours(currentHour, 0, 0, 0)
+
+          // Helper to check if date is a working day
+          const isWorkingDay = (date) => {
+            const day = date.getDay()
+            const dateTimestamp = date.setHours(0, 0, 0, 0)
+            return day !== 0 && day !== 6 && !dayOffDates.includes(dateTimestamp)
           }
 
-          // Skip weekends and holidays/day offs
-          while (
-            currentDate.getDay() === 0 ||
-            currentDate.getDay() === 6 ||
-            dayOffDates.includes(currentDate.toDateString())
-          ) {
+          // Skip initial non-working days
+          while (!isWorkingDay(currentDate)) {
             currentDate.setDate(currentDate.getDate() + 1)
+            currentDate.setHours(WORKING_START_HOUR, 0, 0, 0)
           }
+
+          while (remainingHours > 0) {
+            if (!isWorkingDay(currentDate)) {
+              currentDate.setDate(currentDate.getDate() + 1)
+              currentDate.setHours(WORKING_START_HOUR, 0, 0, 0)
+              continue
+            }
+
+            const availableHours = WORKING_END_HOUR - currentDate.getHours()
+            const hoursToAdd = Math.min(availableHours, remainingHours)
+
+            if (hoursToAdd > 0) {
+              currentDate.setHours(currentDate.getHours() + hoursToAdd)
+              remainingHours -= hoursToAdd
+            }
+
+            if (remainingHours > 0) {
+              currentDate.setDate(currentDate.getDate() + 1)
+              currentDate.setHours(WORKING_START_HOUR, 0, 0, 0)
+            }
+          }
+
+          // Cap at end of working day if needed
+          if (currentDate.getHours() >= WORKING_END_HOUR) {
+            currentDate.setHours(WORKING_END_HOUR - 1, 59, 59)
+          }
+
+          return currentDate
         }
 
-        // Ensure end time doesn't exceed 6PM
-        if (currentDate.getHours() >= workingEndHour) {
-          currentDate.setHours(workingEndHour - 1, 59, 59) // Set to 5:59:59 PM
+        if (estimatedHours > 0) {
+          const endDate = calculateEndDate(startDate, estimatedHours)
+          await form.setValue('date_range.to', endDate, {
+            shouldValidate: true,
+            shouldDirty: true,
+            shouldTouch: true,
+          })
         }
-
-        return currentDate
       }
 
-      if (estimatedHours > 0) {
-        const endDate = calculateEndDate(startDate, estimatedHours)
-        form.setValue('date_range.to', endDate)
-      }
+      calculateDates()
     }
-  }, [defaultStartDateQuery.data, est_mh, dayOffQuery.data])
+  }, [defaultStartDateQuery.data, dayOffQuery.data, form, est_mh]) // Removed est_mh dependency
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -390,26 +382,26 @@ export default function TaskOverlay({
                 placeholder="Task milestone"
               />
 
+              <DateTimeRangeFormField
+                name="date_range"
+                control={form.control}
+                label="Start date - end date"
+                required={true}
+              />
+
               <FormField
                 control={form.control}
-                name="date_range"
+                name="deadline"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Start Date - End Date</FormLabel>
+                    <FormLabel>Deadline</FormLabel>
                     <FormControl>
-                      <DateTimeRangePicker
-                        value={field.value}
-                        onChange={(range) => field.onChange(range)}
-                        placeholder="Select a date range"
-                        className={getBorderColor('selectedRange')}
-                      />
+                      <Input disabled value={format(form.getValues('date_range.to'), 'PPP')} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <CalendarField label={'Deadline'} name={'deadline'} />
 
               <FormField
                 control={form.control}
