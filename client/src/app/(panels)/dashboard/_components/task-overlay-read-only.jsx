@@ -1,52 +1,46 @@
-"use client";
+'use client'
 
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Form } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { useQuery } from "@tanstack/react-query";
-import { masterService } from "@/services/index.mjs";
-import CalendarField from "@/components/fields/calendar-field";
-import SelectField from "@/components/fields/select-field";
-import { utc7Offset } from "@/lib/utils";
-import { toast } from "sonner";
+} from '@/components/ui/dialog'
+import { Form } from '@/components/ui/form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { DateTimeRangePicker } from '@/components/ui/date-range-picker'
+import { useQuery } from '@tanstack/react-query'
+import { masterService } from '@/services/index.mjs'
+import CalendarField from '@/components/fields/calendar-field'
+import SelectField from '@/components/fields/select-field'
+import { utc7Offset } from '@/lib/utils'
+import { toast } from 'sonner'
 
 const taskSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   note: z.string().optional(),
-  est_mh: z.coerce.number().min(0, "Must be positive"),
+  est_mh: z.coerce.number().min(0, 'Must be positive'),
   date_range: z.object({
     from: z.date(),
     to: z.date(),
   }),
   deadline: z.date(),
   project_id: z.string(),
-  assignee_id: z.string().min(1, "Assignee is required"),
+  assignee_id: z.string().min(1, 'Assignee is required'),
   priority_id: z.string().optional(),
   milestone_id: z.string().optional(),
   status_id: z.string().optional(),
   product_id: z.string().optional(),
   progress: z.coerce.number().optional(),
-});
+})
 
 export default function TaskOverlay({
   task = {},
@@ -61,95 +55,82 @@ export default function TaskOverlay({
     resolver: zodResolver(
       taskSchema.superRefine((data, ctx) => {
         if (task) {
-          if (!data.priority_id || data.priority_id.trim() === "") {
+          if (!data.priority_id || data.priority_id.trim() === '') {
             ctx.addIssue({
-              path: ["priority_id"],
+              path: ['priority_id'],
               code: z.ZodIssueCode.custom,
-            });
+            })
           }
 
-          if (!data.status_id || data.status_id.trim() === "") {
+          if (!data.status_id || data.status_id.trim() === '') {
             ctx.addIssue({
-              path: ["status_id"],
+              path: ['status_id'],
               code: z.ZodIssueCode.custom,
-            });
+            })
           }
 
           if (data.progress < 0 || data.progress === undefined) {
             ctx.addIssue({
-              path: ["progress"],
+              path: ['progress'],
               code: z.ZodIssueCode.custom,
-            });
+            })
           }
         }
       })
     ),
     defaultValues: {
-      name: task?.name || "",
-      note: task?.note || "",
+      name: task?.name || '',
+      note: task?.note || '',
       est_mh: task?.est_mh || 0,
       date_range: {
         from: task?.date_start ? new Date(task?.date_start) : new Date(),
         to: task?.date_end ? new Date(task?.date_end) : new Date(),
       },
       deadline: task?.deadline ? new Date(task?.deadline) : new Date(),
-      priority_id: task?.priority_id?.id || "",
-      assignee_id: task?.assignee_id?.id || "",
+      priority_id: task?.priority_id?.id || '',
+      assignee_id: task?.assignee_id?.id || '',
     },
-  });
+  })
 
-  const projectId = form.watch("project_id");
+  const projectId = form.watch('project_id')
   const priorityQuery = useQuery({
-    queryKey: ["priority"],
+    queryKey: ['priority'],
     queryFn: masterService.getPriorities,
-  });
+  })
   const assigneeQuery = useQuery({
-    queryKey: ["assignee"],
+    queryKey: ['assignee'],
     queryFn: masterService.getResources,
-  });
+  })
   const projectsQuery = useQuery({
-    queryKey: ["select-project"],
+    queryKey: ['select-project'],
     queryFn: masterService.getProjects,
-  });
+  })
   const mileStoneQuery = useQuery({
-    queryKey: ["milestones", { project_id: projectId }],
-    queryFn: () =>
-      masterService.getMilestone({ params: { id_project: projectId } }),
-  });
+    queryKey: ['milestones', { project_id: projectId }],
+    queryFn: () => masterService.getMilestone({ params: { id_project: projectId } }),
+  })
   const taskStatusQuery = useQuery({
-    queryKey: ["task-status"],
-    queryFn: () => masterService.getStatuses({ params: { type: "TASK" } }),
-  });
+    queryKey: ['task-status'],
+    queryFn: () => masterService.getStatuses({ params: { type: 'TASK' } }),
+  })
   const prouductQuery = useQuery({
-    queryKey: ["products"],
+    queryKey: ['products'],
     queryFn: masterService.getProducts,
-  });
+  })
 
   const getBorderColor = (fieldName) =>
-    form.formState.errors[fieldName] ? "border-red-500" : "border-gray-300";
+    form.formState.errors[fieldName] ? 'border-red-500' : 'border-gray-300'
 
   const handleSubmit = (values) => {
-    const assignee_id = assigneeQuery.data?.find(
-      (a) => a.id === values.assignee_id
-    );
-    const project_id = projectsQuery.data?.find(
-      (a) => a.id === values.project_id
-    );
-    const priority_id = priorityQuery.data?.find(
-      (a) => a.id === values.priority_id
-    );
-    const status_id = taskStatusQuery.data?.find(
-      (a) => a.id === values.status_id
-    );
-    const milestone_id = mileStoneQuery.data?.find(
-      (a) => a.id === values.milestone_id
-    );
-    const product_id = prouductQuery.data?.find(
-      (a) => a.id === values.product_id
-    );
-    const date_start = new Date(values.date_range.from).getTime() + utc7Offset;
-    const date_end = new Date(values.date_range.to).getTime() + utc7Offset;
-    const deadline = new Date(values.deadline).getTime() + utc7Offset;
+    const assignee_id = assigneeQuery.data?.find((a) => a.id === values.assignee_id)
+    const project_id = projectsQuery.data?.find((a) => a.id === values.project_id)
+    const priority_id = priorityQuery.data?.find((a) => a.id === values.priority_id)
+    const status_id = taskStatusQuery.data?.find((a) => a.id === values.status_id)
+    const milestone_id = mileStoneQuery.data?.find((a) => a.id === values.milestone_id)
+    const product_id = prouductQuery.data?.find((a) => a.id === values.product_id)
+    const date_start = new Date(values.date_range.from).getTime() + utc7Offset
+    const date_end = new Date(values.date_range.to).getTime() + utc7Offset
+    const deadline = new Date(values.deadline).getTime() + utc7Offset
 
     const submitValues = {
       ...values,
@@ -164,70 +145,70 @@ export default function TaskOverlay({
       date_start,
       date_end,
       deadline,
-    };
+    }
     submitValues.priority_id = priority_id
       ? {
           id: priority_id.id,
           name: priority_id.name,
         }
-      : undefined;
+      : undefined
     submitValues.status_id = status_id
       ? {
           id: status_id.id,
           name: status_id.name,
         }
-      : undefined;
+      : undefined
     submitValues.milestone_id = milestone_id
       ? {
           id: milestone_id.id,
           name: milestone_id.name,
         }
-      : undefined;
+      : undefined
     submitValues.product_id = product_id
       ? {
           id: product_id.id,
           name: product_id.name,
         }
-      : undefined;
+      : undefined
 
-    onSubmit(submitValues);
-    form.reset();
-  };
+    onSubmit(submitValues)
+    form.reset()
+  }
   const handleDelete = () => {
-    onDelete();
-  };
+    onDelete()
+  }
 
   React.useEffect(() => {
     form.reset({
-      name: task?.name || "",
-      note: task?.note || "",
+      name: task?.name || '',
+      note: task?.note || '',
       est_mh: task?.est_mh || 0,
       date_range: {
         from: task?.date_start ? new Date(task?.date_start) : new Date(),
         to: task?.date_end ? new Date(task?.date_end) : new Date(),
       },
       deadline: task?.deadline ? new Date(task?.deadline) : new Date(),
-      priority_id: task?.priority_id?.id || "",
-      assignee_id: task?.assignee_id?.id || "",
-      project_id: task?.project_id?.id || "",
-      milestone_id: task?.milestone_id?.id || "",
-      status_id: task?.status_id?.id || "",
-      product_id: task?.product_id?.id || "",
+      priority_id: task?.priority_id?.id || '',
+      assignee_id: task?.assignee_id?.id || '',
+      project_id: task?.project_id?.id || '',
+      milestone_id: task?.milestone_id?.id || '',
+      status_id: task?.status_id?.id || '',
+      product_id: task?.product_id?.id || '',
       progress: task?.progress || 0,
-    });
-  }, [task]);
+    })
+  }, [task])
 
-  const { errors } = form.formState;
+  const { errors } = form.formState
   React.useEffect(() => {
     if (Object.keys(errors).length > 0) {
-      console.error(errors);
-      toast.error("Please fix the errors in the form before submitting.", {
+      console.error(errors)
+      toast.error('Please fix the errors in the form before submitting.', {
         description: Object.values(errors)
           .map((error) => error.message)
-          .join(", "),
-      });
+          .join(', '),
+      })
     }
-  }, [errors]);
+  }, [errors])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -238,9 +219,7 @@ export default function TaskOverlay({
             className="max-h-[80vh] overflow-auto pb-10 pl-2 pr-1"
           >
             <DialogHeader>
-              <DialogTitle>
-                {task?._id ? "View Task Detail" : "Create New Task"}
-              </DialogTitle>
+              <DialogTitle>{task?._id ? 'View Task Detail' : 'Create New Task'}</DialogTitle>
             </DialogHeader>
 
             <div className="grid md:grid-cols-2 gap-4 py-4">
@@ -260,8 +239,8 @@ export default function TaskOverlay({
               />
 
               <SelectField
-                label={"Assignee"}
-                name={"assignee_id"}
+                label={'Assignee'}
+                name={'assignee_id'}
                 disabled={true}
                 optionLabel="name"
                 optionValue="id"
@@ -285,9 +264,9 @@ export default function TaskOverlay({
               />
 
               <SelectField
-                label={"Project"}
+                label={'Project'}
                 disabled={true}
-                name={"project_id"}
+                name={'project_id'}
                 optionLabel="name"
                 optionValue="id"
                 options={projectsQuery.data || []}
@@ -295,9 +274,9 @@ export default function TaskOverlay({
               />
 
               <SelectField
-                label={"Milestone"}
+                label={'Milestone'}
                 disabled={true}
-                name={"milestone_id"}
+                name={'milestone_id'}
                 optionLabel="name"
                 optionValue="id"
                 options={mileStoneQuery.data || []}
@@ -312,12 +291,12 @@ export default function TaskOverlay({
                   <FormItem>
                     <FormLabel>Start Date - End Date</FormLabel>
                     <FormControl>
-                      <DateRangePicker
+                      <DateTimeRangePicker
                         disabled={true}
                         value={field.value}
                         onChange={(range) => field.onChange(range)}
                         placeholder="Select a date range"
-                        className={getBorderColor("selectedRange")}
+                        className={getBorderColor('selectedRange')}
                       />
                     </FormControl>
                     <FormMessage />
@@ -325,11 +304,7 @@ export default function TaskOverlay({
                 )}
               />
 
-              <CalendarField
-                label={"Deadline"}
-                name={"deadline"}
-                disabled={true}
-              />
+              <CalendarField label={'Deadline'} name={'deadline'} disabled={true} />
 
               <FormField
                 control={form.control}
@@ -349,8 +324,8 @@ export default function TaskOverlay({
               {task && (
                 <>
                   <SelectField
-                    label={"Product"}
-                    name={"product_id"}
+                    label={'Product'}
+                    name={'product_id'}
                     optionLabel="name"
                     optionValue="id"
                     options={prouductQuery.data || []}
@@ -359,8 +334,8 @@ export default function TaskOverlay({
                   />
 
                   <SelectField
-                    label={"Priority"}
-                    name={"priority_id"}
+                    label={'Priority'}
+                    name={'priority_id'}
                     optionLabel="name"
                     optionValue="id"
                     disabled={true}
@@ -368,8 +343,8 @@ export default function TaskOverlay({
                   />
 
                   <SelectField
-                    label={"Status"}
-                    name={"status_id"}
+                    label={'Status'}
+                    name={'status_id'}
                     optionLabel="name"
                     optionValue="id"
                     disabled={true}
@@ -401,5 +376,5 @@ export default function TaskOverlay({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

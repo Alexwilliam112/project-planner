@@ -31,6 +31,24 @@ const tasksService = {
 
     return data
   },
+  async getHolidaysAndTimeoff({ params }) {
+    const response = await apiClient.get(TASKS_API.GET_HOLIDAYS_AND_TIMEOFF, { params })
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
+  async getDefaultStartDate({ params }) {
+    const response = await apiClient.get(TASKS_API.GET_DEFAULT_START_DATE, { params })
+
+    const { error, message, data } = response.data
+
+    if (error) throw new Error(message)
+
+    return data
+  },
   async create({ payload, id_project }) {
     const response = await apiClient.post(TASKS_API.CREATE, payload, { params: { id_project } })
 
