@@ -28,6 +28,9 @@ export const createTaskSummaryColumns = ({ handleEdit }) => [
   {
     accessorKey: "project_id.name",
     header: "Project",
+    cell: ({ row }) => (
+      <div className="w-[20ch] py-2 text-wrap">{row.original.project_id.name}</div>
+    ),
   },
   {
     accessorKey: "milestone_id.name",
@@ -48,6 +51,9 @@ export const createTaskSummaryColumns = ({ handleEdit }) => [
   {
     accessorKey: "name",
     header: "Task Name",
+    cell: ({ row }) => (
+      <div className="w-[30ch] py-2 text-wrap">{row.original.name}</div>
+    ),
   },
   {
     accessorKey: "priority_id.name",
