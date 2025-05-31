@@ -150,18 +150,21 @@ export default function TaskOverlay({
       ? {
           id: priority_id.id,
           name: priority_id.name,
+          color: priority_id.color,
         }
       : undefined
     submitValues.status_id = status_id
       ? {
           id: status_id.id,
           name: status_id.name,
+          color: status_id.color,
         }
       : undefined
     submitValues.milestone_id = milestone_id
       ? {
           id: milestone_id.id,
           name: milestone_id.name,
+          color: milestone_id.color,
         }
       : undefined
     submitValues.product_id = product_id
