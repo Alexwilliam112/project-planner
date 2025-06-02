@@ -16,10 +16,9 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { DateTimeRangeFormField, DateTimeRangePicker } from '@/components/ui/date-range-picker'
+import { DateTimeRangeFormField } from '@/components/ui/date-range-picker'
 import { useQuery } from '@tanstack/react-query'
 import { masterService, tasksService } from '@/services/index.mjs'
-import CalendarField from '@/components/fields/calendar-field'
 import SelectField from '@/components/fields/select-field'
 import { utc7Offset } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -132,10 +131,7 @@ export default function TaskOverlay({
     enabled: !!assignee_id && !task,
   })
 
-  const getBorderColor = (fieldName) =>
-    form.formState.errors[fieldName] ? 'border-red-500' : 'border-gray-300'
-
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
     const assignee_id = assigneeQuery.data?.find((a) => a.id === values.assignee_id)
     const project_id = projectsQuery.data?.find((a) => a.id === values.project_id)
     const priority_id = priorityQuery.data?.find((a) => a.id === values.priority_id)
@@ -144,7 +140,7 @@ export default function TaskOverlay({
     const product_id = prouductQuery.data?.find((a) => a.id === values.product_id)
     const date_start = new Date(values.date_range.from).getTime() + utc7Offset
     const date_end = new Date(values.date_range.to).getTime() + utc7Offset
-    const deadline = new Date(values.deadline).getTime() + utc7Offset
+    const deadline = new Date(values.date_range.to).getTime() + utc7Offset
 
     const submitValues = {
       ...values,
@@ -188,7 +184,7 @@ export default function TaskOverlay({
         }
       : undefined
 
-    onSubmit(submitValues)
+    await onSubmit(submitValues)
     form.reset()
   }
   const handleDelete = () => {
@@ -329,7 +325,7 @@ export default function TaskOverlay({
 
       calculateDates()
     }
-  }, [defaultStartDateQuery.data, dayOffQuery.data, form, est_mh]) // Removed est_mh dependency
+  }, [est_mh])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -414,7 +410,11 @@ export default function TaskOverlay({
                   <FormItem>
                     <FormLabel>Deadline</FormLabel>
                     <FormControl>
-                      <Input disabled value={format(form.getValues('date_range.to'), 'PPP')} />
+                      <Input
+                        disabled
+                        {...field}
+                        value={format(form.watch('date_range.to'), 'PPP')}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

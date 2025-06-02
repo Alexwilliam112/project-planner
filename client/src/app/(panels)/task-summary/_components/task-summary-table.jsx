@@ -21,7 +21,7 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
   const createMutation = useMutation({
     mutationFn: tasksService.create,
     onSuccess: () => {
-      queryClient.invalidateQueries(['tasks'])
+      queryClient.invalidateQueries(['task-summary', 'resource-capacity'])
       toast.success('Task created successfully')
       setOpen(false)
     },
@@ -32,7 +32,7 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
   const updateMutation = useMutation({
     mutationFn: tasksService.update,
     onSuccess: () => {
-      queryClient.invalidateQueries(['tasks'])
+      queryClient.invalidateQueries(['task-summary', 'resource-capacity'])
       toast.success('Task updated successfully')
       setOpen(false)
     },
@@ -43,7 +43,7 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
   const deleteMutation = useMutation({
     mutationFn: tasksService.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries(['tasks'])
+      queryClient.invalidateQueries(['task-summary', 'resource-capacity'])
       toast.success('Task deleted successfully')
       setOpen(false)
     },
@@ -72,6 +72,8 @@ export default function TaskSummaryTable({ taskSummaryQuery }) {
         payload: formData,
       })
     }
+
+    queryClient.invalidateQueries(['task-summary', 'resource-capacity'])
   }
 
   const handleDelete = async () => {

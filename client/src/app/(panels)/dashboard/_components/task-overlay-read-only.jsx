@@ -15,8 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Button } from '@/components/ui/button'
-import { DateTimeRangePicker } from '@/components/ui/date-range-picker'
+import { DateTimeRangeFormField, DateTimeRangePicker } from '@/components/ui/date-range-picker'
 import { useQuery } from '@tanstack/react-query'
 import { masterService } from '@/services/index.mjs'
 import CalendarField from '@/components/fields/calendar-field'
@@ -283,25 +282,11 @@ export default function TaskOverlay({
                 placeholder="Task milestone"
               />
 
-              <FormField
-                control={form.control}
-                disabled={true}
+              <DateTimeRangeFormField
                 name="date_range"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Date - End Date</FormLabel>
-                    <FormControl>
-                      <DateTimeRangePicker
-                        disabled={true}
-                        value={field.value}
-                        onChange={(range) => field.onChange(range)}
-                        placeholder="Select a date range"
-                        className={getBorderColor('selectedRange')}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                control={form.control}
+                label="Start date - end date"
+                required={true}
               />
 
               <CalendarField label={'Deadline'} name={'deadline'} disabled={true} />
