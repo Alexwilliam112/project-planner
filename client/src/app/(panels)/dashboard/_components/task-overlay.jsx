@@ -124,12 +124,12 @@ export default function TaskOverlay({
   const defaultStartDateQuery = useQuery({
     queryKey: ['tasksService.getDefaultStartDate', assignee_id],
     queryFn: () => tasksService.getDefaultStartDate({ params: { assignee_id } }),
-    enabled: !!assignee_id,
+    enabled: !!assignee_id && !task,
   })
   const dayOffQuery = useQuery({
     queryKey: ['tasksService.getHolidaysAndTimeoff', assignee_id],
     queryFn: () => tasksService.getHolidaysAndTimeoff({ params: { assignee_id } }),
-    enabled: !!assignee_id,
+    enabled: !!assignee_id && !task,
   })
 
   const getBorderColor = (fieldName) =>
