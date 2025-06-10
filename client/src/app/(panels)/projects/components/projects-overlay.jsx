@@ -299,8 +299,17 @@ export default function ProjectsOverlay({ data }) {
                   </>
                 )}
                 <InputField name={'est_mh'} label={'Man-hour Estimation'} type="number" />
-                <CalendarField name={'date_start'} label={'Start Date'} />
-                <CalendarField name={'date_end'} label={'End Date'} disabled={data} />
+                <CalendarField
+                  name={'date_start'}
+                  label={'Start Date'}
+                  disabledAfter={new Date(generalInfoForm.watch('date_end'))}
+                />
+                <CalendarField
+                  name={'date_end'}
+                  label={'End Date'}
+                  disabled={data}
+                  disabledBefore={new Date(generalInfoForm.watch('date_start'))}
+                />
                 <div className="col-span-1 md:col-span-2">
                   <TextareaField name={'note'} label={'Note'} />
                 </div>

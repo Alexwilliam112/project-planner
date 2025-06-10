@@ -19,7 +19,7 @@ import {
 import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import { useFormContext } from 'react-hook-form'
-import { format, getMonth, getYear } from 'date-fns'
+import { format, getMonth, getYear, isBefore, isAfter } from 'date-fns'
 import { useState } from 'react'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
@@ -40,7 +40,16 @@ const months = [
   'Desember',
 ]
 
-export default function CalendarField({ name, label, placeholder, description, disabled }) {
+export default function CalendarField({
+  name,
+  label,
+  placeholder,
+  description,
+  disabled,
+  disabledBefore,
+  disabledAfter,
+  disabledDates,
+}) {
   const form = useFormContext()
 
   // State for currently viewed month/year in the calendar
@@ -55,6 +64,23 @@ export default function CalendarField({ name, label, placeholder, description, d
       ...prev,
       [type]: parseInt(value),
     }))
+  }
+
+  // Function to determine if a date should be disabled
+  const isDateDisabled = (date) => {
+    if (disabledBefore && isBefore(date, disabledBefore)) {
+      return true
+    }
+    if (disabledAfter && isAfter(date, disabledAfter)) {
+      return true
+    }
+    if (
+      disabledDates &&
+      disabledDates.some((disabledDate) => date.toDateString() === disabledDate.toDateString())
+    ) {
+      return true
+    }
+    return false
   }
 
   return (
@@ -124,6 +150,7 @@ export default function CalendarField({ name, label, placeholder, description, d
                       year: getYear(newMonth),
                     })
                   }}
+                  disabled={isDateDisabled}
                   initialFocus
                 />
               </PopoverContent>
